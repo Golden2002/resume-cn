@@ -91,7 +91,8 @@ spacing:
     # 多出来的行距全跑到字上方，白字会偏下，做不到垂直居中；
     # 单元格的 verticalAlign 能把字真正居中，左右留白也能用单元格边距精确给。
     cellMarginTopBottom: 60
-    cellMarginLeft: 100
+    # 左内边距 27 twips，约 1.35 pt。基准的首字距条边 1.44 pt，差的是字形自身的侧距。
+    cellMarginLeft: 27
     indentLeft: 0
     indentRight: 0
   entry:
