@@ -26,6 +26,23 @@ cd resume-cn
 npm install
 ```
 
+## 交给智能体
+
+把下面这段发给任意能读写文件的智能体，它会在这个工作目录装好工具、建好数据目录，再读你的材料填进 `resume.yaml`：
+
+```
+在当前工作目录安装 resume-cn 并生成我的简历：
+1. git clone https://github.com/Golden2002/resume-cn.git tools/resume-cn
+2. cd tools/resume-cn 后执行 npm install
+3. 读我给的简历、证书和证明材料，写入 data/我的名字/resume.yaml，
+   字段名照 data/example/resume.yaml；日期与编号加引号，不要写身份证号
+4. 在 evidence 段为每项事实注明对应的材料文件
+5. 运行 node src/cli.js check --data data/我的名字 --variant teacher-biology
+6. 把报告里不通过的条目改到通过，再把 PDF 路径给我
+```
+
+`data/` 在 `.gitignore` 里，个人信息与材料不会被提交。证明材料放在 `data/<目录>/evidence/` 下，在 `evidence` 段按字段路径指向它。
+
 ## 快速开始
 
 ```bash
@@ -203,6 +220,16 @@ forbidEntities:
 ```yaml
 name: "**山东省烟台第一中学** · 生物竞赛暑期培训"
 ```
+
+## 自定义模板
+
+模板是一份 `templates/<名称>/template.yaml`。颜色、字号、行距、页边距、证件照尺寸、分区标题都写在里面，渲染器不读代码里的常量。复制 `templates/fudan-red` 改名，再改变体里的 `template` 字段即可换用。
+
+三条约束：
+
+- 行高写成显式值。留 auto 的话，换字体会改变分页。
+- 分区标题条在 LibreOffice 下需要 `compensation` 段里的补偿值，否则条宽、条高与字位会与 Word 不同。
+- 任何字体二进制都不要放进仓库。
 
 ## 字体
 
