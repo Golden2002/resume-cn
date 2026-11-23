@@ -87,14 +87,15 @@ spacing:
   section:
     before: 220
     after: 96
-    # 条高直接给绝对值。红条是一块色块，高度必须可预期：
-    # 用行距倍数没用，LibreOffice 对单行段落按字号给最小行高，倍数调大了也不变。
-    # 取 20.5 pt 时，11 pt 白字上下各留约 4.7 pt，与定稿 PDF 的 20.4 pt 一致。
-    heightPt: 20.5
-    # 缩进取 0。定稿脚本写的是 40，但那份 PDF 由 Word 导出：Word 按整栏铺底色、
-    # 不理左右缩进，LibreOffice 严格按缩进收窄。取 0 才能得到整栏宽度的红条。
+    # 条高按基准的 20.4 pt 定，用最小行高给绝对值。
+    heightPt: 20.4
+    # 缩进取 0。缩进会连底色一起挪：LibreOffice 把条和字一起右移，
+    # 结果字还是贴着条边。所以缩进不用来留白。
     indentLeft: 0
     indentRight: 0
+    # 白字前面垫一个空格当内边距。用字符留白，两个引擎的算法一致，
+    # 不会出现 Word 铺满整栏、LibreOffice 收窄的分歧。
+    textInset: " "
   entry:
     before: 130
     after: 40

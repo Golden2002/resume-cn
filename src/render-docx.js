@@ -87,7 +87,11 @@ function makeRuns(template) {
         { before: cfg.before === undefined ? 220 : cfg.before, after: cfg.after === undefined ? 96 : cfg.after },
         { line: Math.round(barHeight * 20), lineRule: LineRuleType.AT_LEAST }
       ),
-      children: [new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' })],
+      children: [
+        // 垫一个空格当左内边距：字符宽度在两个引擎里算法一致
+        ...(cfg.textInset ? [new TextRun({ text: cfg.textInset, font: FONT, size: halfPt(T.sectionTitle), color: 'FFFFFF' })] : []),
+        new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' }),
+      ],
     });
   };
 

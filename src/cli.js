@@ -170,7 +170,7 @@ async function cmdBuild({ runGates }) {
 
   let pdfResult = null;
   if (!has('no-pdf')) {
-    pdfResult = renderPdf.convert({ input: docx.outFile, output: base + '.pdf', converter: arg('pdf-cmd') });
+    pdfResult = renderPdf.convert({ input: docx.outFile, output: base + '.pdf', engine: arg('pdf-engine'), cmd: arg('pdf-cmd') });
     if (pdfResult.ok) {
       console.log(green('✓ PDF  ') + dim(`${pdfResult.pdf} （转换器：${pdfResult.conv}）`));
       if (pdfResult.missingFonts && pdfResult.missingFonts.length) {

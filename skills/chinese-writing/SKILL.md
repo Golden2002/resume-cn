@@ -93,10 +93,16 @@ description: 按国家标准与余光中的口径审校中文写作，给出可�
 
 ## 与代码的配合
 
-本规则集的 17 条已实现在 [resume-cn](../../README.md) 的语言门禁里，可对任意文本执行一遍：
-
 ```bash
 node -e "const g=require('./src/gates/language');console.log(g.check(require('fs').readFileSync(0,'utf8')))"
 ```
 
 判定是确定性的，不含模型判断，因此可以挂进 CI 当门禁用。交付前要求 0 违例。
+
+## 条款原文
+
+`reference/` 下收了三份整理稿：标点符号用法要点、数字用法要点、正误对照 100 例。它们来自 paeg-teaching-language-skill（MIT 许可）。本文件里的标点与数字两节由那三份整理而成，引用条款时以国标原文为准。
+
+## 与代码的配合
+
+17 条规则已实现在 [resume-cn](../../README.md) 的语言门禁里，可以对任意文本执行一遍：

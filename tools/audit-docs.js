@@ -20,6 +20,8 @@ function collect(dir, acc = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     if (e.name === 'node_modules' || e.name === '.git' || e.name === 'out' || e.name === 'fonts') continue;
     const p = path.join(dir, e.name);
+    // reference 下收录的是第三方原文，不改写，也不参与本项目的语言审计
+    if (e.isDirectory() && p.endsWith(path.join('skills', 'chinese-writing', 'reference'))) continue;
     if (e.isDirectory()) collect(p, acc);
     else if (e.name.endsWith('.md')) acc.push(p);
   }

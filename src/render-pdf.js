@@ -20,12 +20,22 @@ function which(cmd) {
   return null;
 }
 
-function resolveConverter(explicit) {
-  if (explicit) return { kind: 'custom-template', template: explicit };
+function resolveConverter(engine, cmdTemplate) {
+  const e = engine || process.env.RESUME_CN_PDF_ENGINE || 'auto';
+
+  // Word 路径：只能走 COM，交给 tools/convert-word.ps1。
+  // 基准简历就是 Word 2019 导出的，需要逐页对齐基准时选它。
+  if (e === 'word') {
+    const ps1 = path.join(__dirname, '..', 'tools', 'convert-word.ps1');
+    return { kind: 'word', ps1 };
+  }
+
+  if (cmdTemplate) return { kind: 'custom-template', template: cmdTemplate };
 
   const envCmd = process.env.RESUME_CN_PDF_CMD;
   if (envCmd) return { kind: 'custom-template', template: envCmd };
 
+  // 明确要求 LibreOffice 时只找 LO，避免悄悄换成 Word 而破坏可比性
   for (const name of ['soffice', 'libreoffice']) {
     const p = which(name);
     if (p) return { kind: 'soffice', bin: p };
@@ -44,6 +54,12 @@ function resolveConverter(explicit) {
 function runConverter(conv, input, output) {
   let args;
   let bin;
+  if (conv.kind === 'word') {
+    // 用 PowerShell 调 Word COM。脚本内部带诊断输出，失败时能看出卡在哪一步。
+    bin = process.platform === 'win32' ? 'powershell' : 'pwsh';
+    args = ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', conv.ps1, '-Input', input, '-Output', output];
+    return spawnSync(bin, args, { encoding: 'utf8', timeout: 180000 });
+  }
   if (conv.kind === 'custom-template') {
     const rendered = conv.template.replace('{input}', input).replace('{output}', output);
     // 交给 shell 执行，允许用户写任意命令
@@ -70,14 +86,15 @@ function parseMissingFonts(stdout) {
     .filter(Boolean);
 }
 
-function convert({ input, output, converter }) {
-  const conv = resolveConverter(converter);
+function convert({ input, output, engine, cmd }) {
+  const conv = resolveConverter(engine, cmd);
   if (!conv) {
     return {
       ok: false,
       reason:
         '找不到 PDF 转换器。三条路：装 LibreOffice 让 soffice 进 PATH；' +
-        '或用 --pdf-cmd 指定命令模板；或设环境变量 RESUME_CN_PDF_CMD。',
+        '或用 --pdf-cmd 指定命令模板；或设环境变量 RESUME_CN_PDF_CMD。' +
+        '也可以用 --pdf-engine word 走 Microsoft Word。',
     };
   }
   // 转换器要求目标文件不存在的情况很常见，先清掉旧产物
