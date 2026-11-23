@@ -76,23 +76,49 @@ function makeRuns(template) {
   const sectionBar = (title) => {
     const cfg = SP.section || {};
     records.push(String(title));
-    // 条高用「最小行高」给绝对值，色块高度才可预期
-    const barHeight = cfg.heightPt || 20.5;
-    return new Paragraph({
-      // keepNext：标题条必须紧跟其下第一条内容，避免标题孤零零留在页底
-      keepNext: true,
-      shading: { type: ShadingType.CLEAR, fill: C.primary },
-      indent: { left: cfg.indentLeft === undefined ? 0 : cfg.indentLeft, right: cfg.indentRight === undefined ? 0 : cfg.indentRight },
-      spacing: Object.assign(
-        { before: cfg.before === undefined ? 220 : cfg.before, after: cfg.after === undefined ? 96 : cfg.after },
-        { line: Math.round(barHeight * 20), lineRule: LineRuleType.AT_LEAST }
-      ),
-      children: [
-        // 垫一个空格当左内边距：字符宽度在两个引擎里算法一致
-        ...(cfg.textInset ? [new TextRun({ text: cfg.textInset, font: FONT, size: halfPt(T.sectionTitle), color: 'FFFFFF' })] : []),
-        new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' }),
+    const width = template.geometry.contentWidthTwip;
+    const padTB = cfg.cellMarginTopBottom === undefined ? 55 : cfg.cellMarginTopBottom;
+    const padLR = cfg.cellMarginLeft === undefined ? 100 : cfg.cellMarginLeft;
+
+    // 单元格边距不占段落间距，所以上下留白用两个极小的空段落补出来
+    const gapBefore = new Paragraph({
+      spacing: { before: Math.max(0, (cfg.before === undefined ? 220 : cfg.before) - 30), after: 0 },
+      children: [new TextRun({ text: '', font: FONT, size: 2 })],
+    });
+    const gapAfter = new Paragraph({
+      spacing: { before: 0, after: Math.max(0, (cfg.after === undefined ? 96 : cfg.after) - 30) },
+      children: [new TextRun({ text: '', font: FONT, size: 2 })],
+    });
+
+    const bar = new Table({
+      width: { size: width, type: WidthType.DXA },
+      columnWidths: [width],
+      borders: noBorders(),
+      rows: [
+        new TableRow({
+          cantSplit: true,
+          children: [
+            new TableCell({
+              width: { size: width, type: WidthType.DXA },
+              shading: { type: ShadingType.CLEAR, fill: C.primary },
+              margins: { top: padTB, bottom: padTB, left: padLR, right: padLR },
+              verticalAlign: VerticalAlign.CENTER,
+              children: [
+                new Paragraph({
+                  // 单元格内行高写死，条高才可预期；居中靠单元格的 verticalAlign
+                  spacing: { before: 0, after: 0, line: 280, lineRule: LineRuleType.EXACT },
+                  children: [
+                    new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
       ],
     });
+
+    return [gapBefore, bar, gapAfter];
   };
 
   /**
@@ -392,7 +418,7 @@ async function render({ data, variant, template, dataDir, outFile }) {
   for (const cfg of variant.content) {
     const list = pickItems(data[cfg.section], cfg);
     if (!list.length) continue;
-    body.push(R.sectionBar(cfg.title || titles[cfg.section] || cfg.section));
+    body.push(...R.sectionBar(cfg.title || titles[cfg.section] || cfg.section));
     for (const it of list) {
       for (const p of renderItem(R, cfg.section, it, cfg, template, inlineLabels)) body.push(p);
     }

@@ -87,15 +87,13 @@ spacing:
   section:
     before: 220
     after: 96
-    # 条高按基准的 20.4 pt 定，用最小行高给绝对值。
-    heightPt: 20.4
-    # 缩进取 0。缩进会连底色一起挪：LibreOffice 把条和字一起右移，
-    # 结果字还是贴着条边。所以缩进不用来留白。
+    # 分区标题条做成单元格，不用段落底色。段落底色只能随行高变化，
+    # 多出来的行距全跑到字上方，白字会偏下，做不到垂直居中；
+    # 单元格的 verticalAlign 能把字真正居中，左右留白也能用单元格边距精确给。
+    cellMarginTopBottom: 60
+    cellMarginLeft: 100
     indentLeft: 0
     indentRight: 0
-    # 白字前面垫一个空格当内边距。用字符留白，两个引擎的算法一致，
-    # 不会出现 Word 铺满整栏、LibreOffice 收窄的分歧。
-    textInset: " "
   entry:
     before: 130
     after: 40
