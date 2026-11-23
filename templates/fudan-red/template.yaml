@@ -145,6 +145,22 @@ inlineLabels:
 pageBudget: 3
 
 # 声明启用后必须由产物门禁校验的项
+# ============ 引擎补偿 ============
+# 同一份 DOCX，Word 与 LibreOffice 渲染不同。下面这组值只在 LibreOffice 下生效，
+# 目的是把这四处的差别补回来，让两个引擎的输出对齐：
+#   条宽 483.3 -> 486.2（Word 铺底色不理左右缩进，LibreOffice 会收窄）
+#   条高 18.4 -> 20.4（LibreOffice 对单行段落按字号给最小行高，行距倍数不起作用）
+#   首字距边 0.1 -> 1.44（用一个小号空格补左侧留白）
+#   字在条内 上 3.1/下 0.8 -> 上 2.1/下 3.8（用 w:position 上抬）
+compensation:
+  libreoffice:
+    section:
+      lineTwips: 408
+      indentLeft: 0
+      indentRight: 22
+      spaceFontHalfPt: 9
+      titleLiftHalfPt: 3
+
 gates:
   requireFontsEmbedded: true
   requireDeclaredFont: true

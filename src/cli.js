@@ -143,6 +143,9 @@ function loadContext() {
     template.font = Object.assign({}, template.font, { family: fontOverride, eastAsia: fontOverride });
   }
 
+  // 记录导出引擎，渲染器据此决定是否套用引擎补偿
+  template.engine = arg('pdf-engine') === 'word' ? 'word' : 'libreoffice';
+
   return { dataDir, resumePath, variantPath, variant, data, templateDir, template };
 }
 

@@ -75,25 +75,39 @@ function makeRuns(template) {
 
   const sectionBar = (title) => {
     const cfg = SP.section || {};
+    const compTable = template.compensation || {};
+    const comp = compTable[template.engine || ''] || null;
+    const sec = Object.assign({}, cfg, (comp && comp.section) || {});
     records.push(String(title));
-    // 属性与定稿脚本逐字一致：shading + before/after/line(auto) + 左右缩进，
-    // 子元素只有一个白字 run。不加 keepNext、不加前置空格、不加 position，
-    // 这三样都会写进 DOCX，LibreOffice 照做，结果就与原流程不同。
+
+    const num = (v, d) => (v === undefined ? d : v);
+    const isComp = !!(comp && comp.section);
+    const lineTw = num(sec.lineTwips, num(sec.line, 260));
+    const spacing = isComp
+      ? { before: num(sec.before, 220), after: num(sec.after, 96), line: lineTw, lineRule: LineRuleType.EXACT }
+      : makeSpacing(template, num(sec.before, 220), num(sec.after, 96), lineTw, LH.section || 20);
+
+    const kids = [];
+    if (isComp && sec.spaceFontHalfPt) {
+      kids.push(new TextRun({ text: ' ', font: FONT, size: sec.spaceFontHalfPt, color: 'FFFFFF' }));
+    }
+    kids.push(
+      new TextRun({
+        text: title,
+        font: FONT,
+        size: halfPt(T.sectionTitle),
+        bold: true,
+        color: 'FFFFFF',
+        ...(isComp && sec.titleLiftHalfPt ? { position: sec.titleLiftHalfPt } : {}),
+      })
+    );
+
     return [
       new Paragraph({
         shading: { type: ShadingType.CLEAR, fill: C.primary },
-        spacing: makeSpacing(
-          template,
-          cfg.before === undefined ? 220 : cfg.before,
-          cfg.after === undefined ? 96 : cfg.after,
-          cfg.line === undefined ? 260 : cfg.line,
-          LH.section || 20
-        ),
-        indent: {
-          left: cfg.indentLeft === undefined ? 40 : cfg.indentLeft,
-          right: cfg.indentRight === undefined ? 40 : cfg.indentRight,
-        },
-        children: [new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' })],
+        spacing,
+        indent: { left: num(sec.indentLeft, 40), right: num(sec.indentRight, 40) },
+        children: kids,
       }),
     ];
   };
