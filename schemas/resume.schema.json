@@ -54,7 +54,8 @@
             "nativePlace": { "type": "string" },
             "hukou": { "type": "string" },
             "studentId": { "type": "string" },
-            "maritalStatus": { "type": "string" }
+            "maritalStatus": { "type": "string" },
+            "headline": { "type": "string", "description": "页首一行身份摘要，如「某某大学 某学院 · 某专业硕士（在读）」" }
           }
         }
       }
@@ -90,10 +91,11 @@
     },
     "work": {
       "type": "array",
+      "description": "教学与实践经历。name（单位）可选：课程助教这类没有独立单位名的条目只写 position 即可。",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "position"],
+        "required": ["position"],
         "properties": {
           "id": { "type": "string" },
           "tags": { "type": "array", "items": { "type": "string" } },
@@ -105,6 +107,25 @@
           "summary": { "type": "string" },
           "highlights": { "type": "array", "items": { "type": "string" } },
           "keywords": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "research": {
+      "type": "array",
+      "description": "科研与学术经历。渲染同 work，但独立成分区，便于教学类与科研类分开列。",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["position"],
+        "properties": {
+          "id": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "position": { "type": "string" },
+          "name": { "type": "string" },
+          "startDate": { "type": "string" },
+          "endDate": { "type": "string" },
+          "summary": { "type": "string" },
+          "highlights": { "type": "array", "items": { "type": "string" } }
         }
       }
     },
@@ -134,6 +155,7 @@
         "properties": {
           "id": { "type": "string" },
           "tags": { "type": "array", "items": { "type": "string" } },
+          "label": { "type": "string", "description": "条目级小标签，如 资质、学科、竞赛、综合、项目" },
           "title": { "type": "string" },
           "date": { "type": "string" },
           "awarder": { "type": "string" },

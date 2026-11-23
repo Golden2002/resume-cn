@@ -20,11 +20,16 @@ function loadDocx() {
 const {
   Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, ImageRun,
   AlignmentType, LevelFormat, BorderStyle, WidthType, ShadingType, TabStopType,
-  Footer, PageNumber, VerticalAlign,
+  Footer, PageNumber, VerticalAlign, LineRuleType,
 } = loadDocx();
 
 const twip = (pt) => Math.round(pt * 20);
 const halfPt = (pt) => Math.round(pt * 2);
+
+/** 固定行高，避免换字体后行高变化把页数顶掉 */
+function exactLine(pt) {
+  return { line: Math.round(pt * 20), lineRule: LineRuleType.EXACT };
+}
 
 function makeRuns(template) {
   const FONT = {
@@ -35,6 +40,7 @@ function makeRuns(template) {
   };
   const C = template.colors;
   const T = template.typography;
+  const LH = template.lineHeightPt || {};
   const records = [];
 
   const run = (text, o = {}) => {
@@ -54,7 +60,7 @@ function makeRuns(template) {
       // keepNext：标题条必须紧跟其下第一条内容，避免标题孤零零留在页底
       keepNext: true,
       shading: { type: ShadingType.CLEAR, fill: C.primary },
-      spacing: { before: 128, after: 54, line: 244, lineRule: 'auto' },
+      spacing: Object.assign({ before: 128, after: 54 }, exactLine(LH.section || 16.5)),
       indent: { left: 40, right: 40 },
       children: [new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' })],
     });
@@ -62,7 +68,7 @@ function makeRuns(template) {
 
   const entryLine = (title, right, org) =>
     new Paragraph({
-      spacing: { before: 74, after: 20, line: 246, lineRule: 'auto' },
+      spacing: Object.assign({ before: 74, after: 20 }, exactLine(LH.body || 15.9)),
       tabStops: [{ type: TabStopType.RIGHT, position: template.geometry.tabStopTwip }],
       children: [
         run(title, { bold: true }),
@@ -74,13 +80,13 @@ function makeRuns(template) {
   const bullet = (children) =>
     new Paragraph({
       numbering: { reference: 'dot', level: 0 },
-      spacing: { before: 10, after: 10, line: 240, lineRule: 'auto' },
+      spacing: Object.assign({ before: 10, after: 10 }, exactLine(LH.body || 15.9)),
       children: Array.isArray(children) ? children : [run(children)],
     });
 
   const para = (children) =>
     new Paragraph({
-      spacing: { before: 18, after: 18, line: 244, lineRule: 'auto' },
+      spacing: Object.assign({ before: 18, after: 18 }, exactLine(LH.body || 15.9)),
       children: Array.isArray(children) ? children : [run(children)],
     });
 
@@ -97,12 +103,12 @@ function makeRuns(template) {
   return { FONT, run, sectionBar, entryLine, bullet, para, inlineRow, records };
 }
 
-/** 按变体配置从数据里挑条目。ids 优先，其次 tags，都没给就全取。 */
+/** 按变体配置从数据里挑条目。给了 ids 就按 ids 的顺序挑，可用它给不同岗位排不同的先后。 */
 function pickItems(list, cfg) {
   let items = Array.isArray(list) ? list.slice() : [];
   if (cfg.ids && cfg.ids.length) {
-    const want = new Set(cfg.ids);
-    items = items.filter((it) => want.has(it.id));
+    const byId = new Map(items.filter((it) => it.id).map((it) => [it.id, it]));
+    items = cfg.ids.map((id) => byId.get(id)).filter(Boolean);
   } else if (cfg.tags && cfg.tags.length) {
     const want = new Set(cfg.tags);
     items = items.filter((it) => Array.isArray(it.tags) && it.tags.some((t) => want.has(t)));
@@ -113,8 +119,9 @@ function pickItems(list, cfg) {
 
 function dateRange(it, sep) {
   if (!it.startDate && !it.endDate) return '';
-  if (!it.startDate) return it.endDate || '';
-  return `${it.startDate}${sep}${it.endDate || '至今'}`;
+  if (!it.startDate) return it.endDate;
+  if (!it.endDate) return it.startDate;
+  return `${it.startDate}${sep}${it.endDate}`;
 }
 
 function takeBullets(it, cfg) {
@@ -136,7 +143,8 @@ function renderItem(R, sectionId, it, cfg, template, inlineLabels) {
       for (const h of takeBullets(it, cfg)) out.push(R.bullet(h));
       break;
     }
-    case 'work': {
+    case 'work':
+    case 'research': {
       out.push(R.entryLine(it.position || '', dateRange(it, sep), it.name));
       if (it.summary) out.push(R.bullet(it.summary));
       for (const h of takeBullets(it, cfg)) out.push(R.bullet(h));
@@ -150,25 +158,28 @@ function renderItem(R, sectionId, it, cfg, template, inlineLabels) {
     }
     case 'awards': {
       const tail = [it.awarder, it.date].filter(Boolean).join('，');
-      out.push(R.inlineRow(inlineLabels.awards || '荣誉', it.title + (tail ? `（${tail}）` : '')));
+      // 条目自带小标签时优先用它，这样「资质／学科／竞赛」能各占一行
+      const label = it.label || inlineLabels.awards || '荣誉';
+      out.push(R.inlineRow(label, it.title + (tail ? `（${tail}）` : '')));
       break;
     }
     case 'certificates': {
       const parts = [it.cn && it.cn.subject, it.credentialId, it.date].filter(Boolean);
-      out.push(R.inlineRow(inlineLabels.certificates || '证书', it.name + (parts.length ? ' ｜ ' + parts.join(' ｜ ') : '')));
+      out.push(R.inlineRow(it.label || inlineLabels.certificates || '证书', it.name + (parts.length ? ' ｜ ' + parts.join(' ｜ ') : '')));
       break;
     }
     case 'publications': {
-      out.push(R.inlineRow(inlineLabels.publications || '作品', it.name + (it.publisher ? `（${it.publisher}）` : '')));
+      const label = it.label !== undefined ? it.label : inlineLabels.publications;
+      out.push(R.inlineRow(label || '', it.name + (it.publisher ? `（${it.publisher}）` : '')));
       break;
     }
     case 'skills': {
       const text = it.summary || (it.keywords || []).join('、');
-      out.push(R.inlineRow(inlineLabels.skills || '', it.name + (text ? '　' + text : '')));
+      out.push(R.inlineRow(it.name, text));
       break;
     }
     case 'languages': {
-      out.push(R.inlineRow(inlineLabels.languages || '', it.language + (it.fluency ? '　' + it.fluency : '')));
+      out.push(R.inlineRow(it.language, it.fluency || ''));
       break;
     }
     default:
@@ -187,39 +198,37 @@ function buildHeader(R, { data, variant, template, dataDir }) {
   if (cn.gender) metaParts.push(cn.gender);
   if (cn.ethnicity) metaParts.push(cn.ethnicity);
   if (cn.birthDate) metaParts.push(formatBirth(cn.birthDate));
-  if (b.location && (b.location.city || b.location.address)) metaParts.push(b.location.city || b.location.address);
-  if (variant.target && variant.target.org) metaParts.push(variant.target.org);
+  if (cn.headline) metaParts.push(cn.headline);
 
   const contactParts = [];
   if (b.phone) contactParts.push(b.phone);
   if (b.email) contactParts.push(b.email);
   if (b.url) contactParts.push(b.url);
 
+  const LH = template.lineHeightPt || {};
   const left = [
     new Paragraph({
-      spacing: { after: 30, line: 236, lineRule: 'auto' },
+      spacing: Object.assign({ after: 30 }, exactLine(LH.name || 26)),
       children: [R.run(b.name || '', { bold: true, size: T.name, color: C.primary })],
     }),
     new Paragraph({
-      spacing: { after: 42, line: 244, lineRule: 'auto' },
+      spacing: Object.assign({ after: 42 }, exactLine(LH.label || 16.5)),
       children: [
         R.run('求职意向：', { bold: true, size: T.label }),
         R.run(variant.label || b.label || '', { bold: true, size: T.label, color: C.primary }),
       ],
     }),
     new Paragraph({
-      spacing: { after: 20, line: 240, lineRule: 'auto' },
-      children: [R.run(metaParts.join('　｜　'), { size: T.small, color: C.muted })],
+      spacing: Object.assign({ after: 20 }, exactLine(LH.small || 15)),
+      children: [R.run(metaParts.join('　｜　'), { size: T.body, color: C.muted })],
     }),
     new Paragraph({
-      spacing: { after: 0, line: 240, lineRule: 'auto' },
-      children: [R.run(contactParts.join('　｜　'), { size: T.small, color: C.muted })],
+      spacing: Object.assign({ after: 0 }, exactLine(LH.small || 15)),
+      children: [R.run(contactParts.join('　｜　'), { size: T.body, color: C.muted })],
     }),
   ];
 
-  const photoCell = twip(template.geometry.photo.widthPt)
-    ? template.geometry.photo.cellWidthTwip
-    : 1500;
+  const photoCell = template.geometry.photo.cellWidthTwip || 1500;
 
   const cells = [
     new TableCell({
@@ -249,8 +258,8 @@ function buildHeader(R, { data, variant, template, dataDir }) {
                   type: imgPath.toLowerCase().endsWith('.png') ? 'png' : 'jpg',
                   data: fs.readFileSync(imgPath),
                   transformation: {
-                    width: template.geometry.photo.widthPt,
-                    height: template.geometry.photo.heightPt,
+                    width: template.geometry.photo.widthPx,
+                    height: template.geometry.photo.heightPx,
                   },
                   altText: { title: '证件照', description: b.name || '', name: 'photo' },
                 }),
@@ -264,7 +273,8 @@ function buildHeader(R, { data, variant, template, dataDir }) {
 
   return new Table({
     width: { size: template.geometry.contentWidthTwip, type: WidthType.DXA },
-    columnWidths: cells.map((c) => c.root ? undefined : undefined),
+    // 列宽必须显式给出，缺省会让左栏按内容自适应，正文因此折行、页首变高
+    columnWidths: [template.geometry.contentWidthTwip - photoCell, photoCell],
     borders: noBorders(),
     rows: [new TableRow({ children: cells })],
   });

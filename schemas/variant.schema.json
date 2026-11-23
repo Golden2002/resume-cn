@@ -32,7 +32,7 @@
         "properties": {
           "section": {
             "type": "string",
-            "enum": ["education", "work", "projects", "awards", "certificates", "publications", "skills", "languages"]
+            "enum": ["education", "work", "research", "projects", "awards", "certificates", "publications", "skills", "languages"]
           },
           "title": { "type": "string", "description": "分区标题，缺省用模板内置标题" },
           "ids": { "type": "array", "items": { "type": "string" } },

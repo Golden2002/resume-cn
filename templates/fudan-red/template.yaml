@@ -32,8 +32,9 @@ geometry:
   contentWidthTwip: 9746
   tabStopTwip: 9746
   photo:
-    widthPt: 72
-    heightPt: 96
+    # DOCX 的图片尺寸以像素计（96 dpi），96×128 px 约合 25×34 mm，两寸证件照
+    widthPx: 96
+    heightPx: 128
     cellWidthTwip: 1500
 
 dateSeparator: " – "
@@ -46,6 +47,15 @@ typography:
   small: 9
   sectionTitle: 10.5
   footer: 8
+
+# 固定行高（pt）。docx 的自动行高随字体度量变化：思源黑体的默认行高比微软雅黑高约 9%，
+# 换字体后每行多出 1.5 pt，两页内容会被挤成三页。钉成显式值后，页数不再随字体漂移。
+lineHeightPt:
+  name: 26
+  label: 16.5
+  body: 15.9
+  small: 15
+  section: 16.5
 
 spacing:
   section:
