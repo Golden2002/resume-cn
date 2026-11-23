@@ -39,7 +39,7 @@ node src/cli.js check --data my-resume --variant teacher-biology
 ✓ schema 校验通过
 ✓ DOCX  .../张三-teacher-biology.docx （104 KB，143 ms）
 ✓ PDF   .../张三-teacher-biology.pdf
-✓ 体例门禁（3 页，判据：PyMuPDF）
+✓ 体例门禁（2 页，判据：PyMuPDF）
 ✓ 语言门禁（17 条规则，0 违例）
 ✓ 字体嵌入（8 个字体描述符，都带嵌入流）
 ✓ 声明字体（PDF 内匹配到 微软雅黑）
