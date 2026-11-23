@@ -1,15 +1,17 @@
 # 复旦红模板：模板清单
 # 渲染器只读这个文件，不读代码里的常量。换模板即换此文件加对应的布局实现。
+#
+# 本文件的数值逐项移植自定稿生成脚本 build_resumes.js，不是从 PDF 反推的。
+# 那份脚本产出的简历（复旦二附校版）是这套版式的基准。
 id: fudan-red
 name: 复旦红
-version: 1.0.0
-description: A4 两页体例，红色标题条，右上证件照，页脚页码。中文简历常用版式。
+version: 1.1.0
+description: A4 体例，红色标题条，右上证件照，页脚页码。中文简历常用版式。
 
 font:
   # 字体名写入 DOCX；PDF 转换时由系统字体目录解析，产物门禁会校验是否真的用上。
   # 本仓库不分发任何字体文件：默认字体是本机常备的微软雅黑，别人机器上没有时，
-  # 用 --font 换成自己装的字体（如 fonts install 下的思源黑体）即可，版式不会变，
-  # 因为行高已在 lineHeightPt 里钉成显式值，不随字体度量浮动。
+  # 用 --font 换成自己装的字体（如 fonts install 下的思源黑体）即可。
   family: "微软雅黑"
   eastAsia: "微软雅黑"
   fallback:
@@ -25,9 +27,11 @@ colors:
 
 page:
   size: A4
+  # 820 / 1080 twips，与定稿脚本一致。上下留 41 pt，比常见的 32 pt 宽，
+  # 首屏不顶到纸边，整页看上去更稳。
   margins:
-    topPt: 32
-    bottomPt: 32
+    topPt: 41
+    bottomPt: 41
     leftPt: 54
     rightPt: 54
 
@@ -42,38 +46,31 @@ geometry:
 
 dateSeparator: " – "
 
-# ============ 排版规范 ============
-# 这组数值是定稿，改动前请先读下面三条理由。
-#
-# 一、字号只分三层
-#   名字 19 pt（唯一的大字，页首焦点）
-#   分区标题 11 pt、求职意向 11 pt（引导层）
-#   条目主行 10 pt、正文 10 pt（信息层）
-#   日期与单位 9 pt（辅助层）；页脚 8 pt
-#   不再增加层级。层级越多，读者越难判断先看哪里。
-#
-# 二、行距按中文字面高度定
-#   中文正文的舒适区是字号的 1.5 到 1.8 倍。10 pt 正文取 16.5 pt，即 1.65 倍。
-#   低于 1.5 会挤，高于 1.8 会散，一页装不下几条内容。
-#   分区标题条取 20 pt，让 11 pt 的白字上下各留约 4.5 pt，底色才能包住文字。
-#   行距必须是显式值：auto 会跟着字体度量走，换字体后页数就变。
-#
-# 三、加粗只有两档字重，且只给三类内容
-#   400 常规、700 加粗。不引入中间字重。
-#   加粗对象只有三类：姓名、分区标题、条目主标题（机构名、职位名、项目名）。
-#   在灰色的单位名里点出关键机构时，用行内 **双星号** 标出，加粗同时改用正文色。
-#   日期、联系方式、正文要点一律不加粗。一条经历里加粗不超过两处，否则满页黑块，
-#   等于没有强调。
+# 教育背景里「专业」与「学位」之间的连接符。定稿写的是空格，不是间隔号。
+studyTypeSeparator: " "
+
+# ============ 字号 ============
+# 只分三层，不再增加。层级越多，读者越难判断先看哪里。
+#   焦点：姓名 20 pt
+#   引导：求职意向 11 pt、分区标题 11 pt
+#   信息：条目主行 10 pt、正文 10 pt
+#   辅助：日期、单位 9.5 pt；页脚 8 pt
+# 单位是 pt，渲染时换算为 DOCX 的半磅值。
 typography:
-  # 单位为 pt，渲染时换算为 DOCX 的半磅值
-  name: 19
+  name: 20
   label: 11
   body: 10
-  small: 9
+  small: 9.5
   sectionTitle: 11
   footer: 8
 
-# 固定行高（pt），与上面第二条对应
+# ============ 行距 ============
+# lineMode 决定 line 字段怎么解释：
+#   auto  — 按 OOXML 的倍数走（240 等于单倍），与定稿脚本一致，版式最接近基准。
+#   exact — 用下面的 lineHeightPt 当固定行高，页数不随字体度量漂移，但视觉会比基准紧。
+# 默认 auto：先对齐既有定稿，稳定性交给 variant 的 pageBudget 兜。
+lineMode: auto
+
 lineHeightPt:
   name: 26
   label: 17
@@ -81,23 +78,63 @@ lineHeightPt:
   small: 15
   section: 20
 
+# ============ 间距 ============
+# 条目之间留多少，决定一页能放几条。数值全部沿用定稿脚本。
 spacing:
+  rule:                 # 姓名下的细线
+    before: 40
+    after: 160
   section:
-    before: 128
-    after: 54
-    line: 244
+    before: 220
+    after: 96
+    # 条高直接给绝对值。红条是一块色块，高度必须可预期：
+    # 用行距倍数没用，LibreOffice 对单行段落按字号给最小行高，倍数调大了也不变。
+    # 取 20.5 pt 时，11 pt 白字上下各留约 4.7 pt，与定稿 PDF 的 20.4 pt 一致。
+    heightPt: 20.5
+    # 缩进取 0。定稿脚本写的是 40，但那份 PDF 由 Word 导出：Word 按整栏铺底色、
+    # 不理左右缩进，LibreOffice 严格按缩进收窄。取 0 才能得到整栏宽度的红条。
+    indentLeft: 0
+    indentRight: 0
   entry:
-    before: 74
-    after: 20
-    line: 246
+    before: 130
+    after: 40
+    line: 264
   bullet:
-    before: 10
-    after: 10
-    line: 240
+    before: 20
+    after: 20
+    line: 262
+  para:
+    before: 40
+    after: 40
+    line: 268
+  header:
+    nameAfter: 40
+    nameLine: 240
+    labelAfter: 60
+    labelLine: 250
+    metaAfter: 30
+    metaLine: 246
+
+# ============ 加粗 ============
+# 只有两档字重：常规 400、加粗 700。加粗只给三类内容：
+# 姓名、分区标题、条目主标题（机构名、职位名、项目名）。
+# 灰色单位串里需要点出关键机构时，用行内 **双星号**，加粗同时改用正文色。
+# 日期、联系方式、正文要点一律不加粗；一条经历不超过两处加粗。
 
 footer:
   leftTemplate: "{name}"
   rightTemplate: "应聘：{label}　｜　第 {page} 页 / 共 {pages} 页"
+
+sectionTitles:
+  education: 教育背景
+  work: 教学与实践经历
+  research: 科研与学术经历
+  projects: 项目与实践经历
+  awards: 荣誉与资质
+  certificates: 证书与资质
+  publications: 论文与作品
+  skills: 语言与技能
+  languages: 语言能力
 
 # 单行罗列型分区的标签词
 inlineLabels:
@@ -107,18 +144,8 @@ inlineLabels:
   skills: ""
   languages: ""
 
-sectionTitles:
-  education: 教育背景
-  work: 教学与实践经历
-  projects: 项目与实践经历
-  awards: 荣誉与资质
-  certificates: 证书与资质
-  publications: 论文与作品
-  skills: 语言与技能
-  languages: 语言能力
-
 # 页数预算默认值。variant 可覆盖。
-pageBudget: 2
+pageBudget: 3
 
 # 声明启用后必须由产物门禁校验的项
 gates:

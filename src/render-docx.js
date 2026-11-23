@@ -31,6 +31,24 @@ function exactLine(pt) {
   return { line: Math.round(pt * 20), lineRule: LineRuleType.EXACT };
 }
 
+/**
+ * 按模板的 lineMode 组装段落间距。
+ * auto 模式直接用 OOXML 的行距倍数（240 等于单倍），与定稿脚本一致；
+ * exact 模式改用固定行高，页数不随字体度量漂移。
+ */
+function makeSpacing(template, before, after, lineMult, exactPt) {
+  const out = {};
+  if (before !== undefined) out.before = before;
+  if (after !== undefined) out.after = after;
+  if (template.lineMode === 'exact') {
+    Object.assign(out, exactLine(exactPt));
+  } else if (lineMult !== undefined) {
+    out.line = lineMult;
+    out.lineRule = 'auto';
+  }
+  return out;
+}
+
 function makeRuns(template) {
   const FONT = {
     ascii: template.font.family,
@@ -41,6 +59,7 @@ function makeRuns(template) {
   const C = template.colors;
   const T = template.typography;
   const LH = template.lineHeightPt || {};
+  const SP = template.spacing || {};
   const records = [];
 
   const run = (text, o = {}) => {
@@ -55,14 +74,19 @@ function makeRuns(template) {
   };
 
   const sectionBar = (title) => {
+    const cfg = SP.section || {};
     records.push(String(title));
+    // 条高用「最小行高」给绝对值，色块高度才可预期
+    const barHeight = cfg.heightPt || 20.5;
     return new Paragraph({
       // keepNext：标题条必须紧跟其下第一条内容，避免标题孤零零留在页底
       keepNext: true,
       shading: { type: ShadingType.CLEAR, fill: C.primary },
-      // 左右不留缩进，底色才能铺满整栏。缩进会让底色跟着收窄，字就露在红条外面
-      indent: { left: 0, right: 0 },
-      spacing: Object.assign({ before: 128, after: 54 }, exactLine(LH.section || 20)),
+      indent: { left: cfg.indentLeft === undefined ? 0 : cfg.indentLeft, right: cfg.indentRight === undefined ? 0 : cfg.indentRight },
+      spacing: Object.assign(
+        { before: cfg.before === undefined ? 220 : cfg.before, after: cfg.after === undefined ? 96 : cfg.after },
+        { line: Math.round(barHeight * 20), lineRule: LineRuleType.AT_LEAST }
+      ),
       children: [new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' })],
     });
   };
@@ -87,9 +111,10 @@ function makeRuns(template) {
     return out;
   };
 
-  const entryLine = (title, right, org) =>
-    new Paragraph({
-      spacing: Object.assign({ before: 74, after: 20 }, exactLine(LH.body || 17.5)),
+  const entryLine = (title, right, org) => {
+    const cfg = SP.entry || {};
+    return new Paragraph({
+      spacing: makeSpacing(template, cfg.before, cfg.after, cfg.line, LH.body || 16.5),
       tabStops: [{ type: TabStopType.RIGHT, position: template.geometry.tabStopTwip }],
       children: [
         ...segmentRuns(title, { bold: true }),
@@ -97,19 +122,24 @@ function makeRuns(template) {
         ...(right ? [run('\t' + right, { color: C.muted, size: T.small })] : []),
       ],
     });
+  };
 
-  const bullet = (children) =>
-    new Paragraph({
+  const bullet = (children) => {
+    const cfg = SP.bullet || {};
+    return new Paragraph({
       numbering: { reference: 'dot', level: 0 },
-      spacing: Object.assign({ before: 10, after: 10 }, exactLine(LH.body || 17.5)),
+      spacing: makeSpacing(template, cfg.before, cfg.after, cfg.line, LH.body || 16.5),
       children: Array.isArray(children) ? children : segmentRuns(children),
     });
+  };
 
-  const para = (children) =>
-    new Paragraph({
-      spacing: Object.assign({ before: 18, after: 18 }, exactLine(LH.body || 17.5)),
+  const para = (children) => {
+    const cfg = SP.para || {};
+    return new Paragraph({
+      spacing: makeSpacing(template, cfg.before, cfg.after, cfg.line, LH.body || 16.5),
       children: Array.isArray(children) ? children : segmentRuns(children),
     });
+  };
 
   const inlineRow = (label, text) => {
     const kids = [];
@@ -159,7 +189,7 @@ function renderItem(R, sectionId, it, cfg, template, inlineLabels) {
   switch (sectionId) {
     case 'education': {
       const right = dateRange(it, sep);
-      const sub = [it.area, it.studyType].filter(Boolean).join(' · ');
+      const sub = [it.area, it.studyType].filter(Boolean).join(template.studyTypeSeparator === undefined ? ' ' : template.studyTypeSeparator);
       out.push(R.entryLine(it.institution + (sub ? ' ｜ ' + sub : ''), right));
       for (const h of takeBullets(it, cfg)) out.push(R.bullet(h));
       break;
@@ -227,25 +257,26 @@ function buildHeader(R, { data, variant, template, dataDir }) {
   if (b.url) contactParts.push(b.url);
 
   const LH = template.lineHeightPt || {};
+  const HS = (template.spacing && template.spacing.header) || {};
   const left = [
     new Paragraph({
-      spacing: Object.assign({ after: 30 }, exactLine(LH.name || 26)),
+      spacing: makeSpacing(template, 0, HS.nameAfter === undefined ? 40 : HS.nameAfter, HS.nameLine, LH.name || 26),
       children: [R.run(b.name || '', { bold: true, size: T.name, color: C.primary })],
     }),
     new Paragraph({
-      spacing: Object.assign({ after: 42 }, exactLine(LH.label || 16.5)),
+      spacing: makeSpacing(template, 0, HS.labelAfter === undefined ? 60 : HS.labelAfter, HS.labelLine, LH.label || 17),
       children: [
         R.run('求职意向：', { bold: true, size: T.label }),
         R.run(variant.label || b.label || '', { bold: true, size: T.label, color: C.primary }),
       ],
     }),
     new Paragraph({
-      spacing: Object.assign({ after: 20 }, exactLine(LH.small || 15)),
-      children: [R.run(metaParts.join('　｜　'), { size: T.body, color: C.muted })],
+      spacing: makeSpacing(template, 0, HS.metaAfter === undefined ? 30 : HS.metaAfter, HS.metaLine, LH.small || 15),
+      children: [R.run(metaParts.join('　｜　'), { size: T.small, color: C.muted })],
     }),
     new Paragraph({
-      spacing: Object.assign({ after: 0 }, exactLine(LH.small || 15)),
-      children: [R.run(contactParts.join('　｜　'), { size: T.body, color: C.muted })],
+      spacing: makeSpacing(template, 0, 0, HS.metaLine, LH.small || 15),
+      children: [R.run(contactParts.join('　｜　'), { size: T.small, color: C.muted })],
     }),
   ];
 
@@ -345,9 +376,10 @@ async function render({ data, variant, template, dataDir, outFile }) {
   const body = [buildHeader(R, { data, variant, template, dataDir })];
 
   // 页首细线
+  const ruleCfg = (template.spacing && template.spacing.rule) || {};
   body.push(
     new Paragraph({
-      spacing: { before: 36, after: 140 },
+      spacing: { before: ruleCfg.before === undefined ? 40 : ruleCfg.before, after: ruleCfg.after === undefined ? 160 : ruleCfg.after },
       border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: template.colors.primary, space: 1 } },
       children: [R.run('', { size: 4 })],
     })
