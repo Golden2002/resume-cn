@@ -91,6 +91,8 @@ spacing:
     # 条上下的留白会翻倍。条高用固定行高写死；白字前垫一个空格当左内边距。
     heightPt: 20.4
     textInset: " "
+    # 白字上抬 3 个半磅（1.5 pt）。段落底色只能把字压在条的下方，抬这一点视觉上才居中。
+    titleLiftHalfPt: 3
     indentLeft: 0
     indentRight: 0
   entry:

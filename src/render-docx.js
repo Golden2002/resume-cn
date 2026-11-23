@@ -20,7 +20,7 @@ function loadDocx() {
 const {
   Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, ImageRun,
   AlignmentType, LevelFormat, BorderStyle, WidthType, ShadingType, TabStopType,
-  Footer, PageNumber, VerticalAlign, LineRuleType,
+  Footer, PageNumber, VerticalAlign, LineRuleType, HeightRule,
 } = loadDocx();
 
 const twip = (pt) => Math.round(pt * 20);
@@ -76,10 +76,12 @@ function makeRuns(template) {
   const sectionBar = (title) => {
     const cfg = SP.section || {};
     records.push(String(title));
-    // 用段落实现条，不用表格。表格两侧要垫空段落，空段落各占一整行，
-    // 条上下的留白会翻倍（实测 50.7 / 26.2，基准是 14.5 / 6.9）。
-    // 条高用固定行高写死，白字在条内的上下偏差约 1.5 pt。
     const barHeight = cfg.heightPt || 20.4;
+    const lift = cfg.titleLiftHalfPt === undefined ? 4 : cfg.titleLiftHalfPt;
+
+    // 段落实现，条高固定。段落底色做不到垂直居中：行距全落在字上方，白字偏低。
+    // 用 w:position 把白字上抬若干半磅来补正，实测抬 2 pt 后上下留白相等。
+    // 不用表格：LibreOffice 会在表格周围加间距，条上下的留白会翻倍。
     return [
       new Paragraph({
         keepNext: true,
@@ -91,7 +93,7 @@ function makeRuns(template) {
         ),
         children: [
           ...(cfg.textInset ? [new TextRun({ text: cfg.textInset, font: FONT, size: halfPt(T.sectionTitle), color: 'FFFFFF' })] : []),
-          new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' }),
+          new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF', position: lift }),
         ],
       }),
     ];
