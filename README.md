@@ -1,12 +1,10 @@
 # resume-cn
 
-用户提供个人信息、证件照与证书等材料，配合不同的岗位描述，生成 Word 与 PDF 格式的个人简历。
-
-生成时检查体例、语言、字体与隐私，任一项不通过即中止，退出码为 1。
+用户提供个人信息、证件照与证书等材料，配合不同的岗位描述，针对性生成匹配不同求职方向的 Word 与 PDF 格式的个人简历。
 
 ![license](https://img.shields.io/badge/license-MIT-9D2235) ![node](https://img.shields.io/badge/node-%E2%89%A5%2018-43853d)
 
-![预览](docs/assets/preview.png)
+![预览](docs/assets/preview-page1.png)
 
 ## 功能
 
@@ -57,7 +55,7 @@ node src/cli.js check --data my-resume --variant teacher-biology
 
 同一份信息可以生成面向不同行业的简历。下面四份出自同一份示例数据，差别在取哪些条目、按什么次序排。
 
-![四个场景的变体](docs/assets/variants.png)
+![四个场景的变体](docs/assets/preview-variants.png)
 
 | 变体 | 面向岗位 | 取用重点 |
 |---|---|---|
