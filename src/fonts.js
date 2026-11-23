@@ -67,7 +67,7 @@ function sha256(file) {
 /**
  * 字体族名到 PDF 内 PostScript 名的别名表。
  * PDF 的 BaseFont 只写拉丁名，中文字体族名（微软雅黑）在里面是 MicrosoftYaHei。
- * 没有这张表，字体门禁会把「雅黑其实用上了」误判成失败。
+ * 没有这张表，字体门禁会把「雅黑确实已生效」误判成失败。
  */
 const FAMILY_ALIASES = {
   微软雅黑: ['MicrosoftYaHei', 'MicrosoftYaHeiUI', 'MSYH'],
@@ -185,7 +185,7 @@ function define(fontsDir, { family, regular, bold }) {
   return { family, manifestPath, entry: manifest[family] };
 }
 
-/** 报告某个字体族在本机能否被找到，以及该怎么做。 */
+/** 报告某个字体族在本机能否被找到，以及应当怎样处理。 */
 function status(family, fontsDir) {
   const manifest = readManifest(fontsDir);
   const known = KNOWN_SOURCES[family];

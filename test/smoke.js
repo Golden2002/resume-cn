@@ -59,6 +59,21 @@ t('第一人称情绪被拦下', () => {
   assert.ok(hits.some((h) => h.rule === 'A4'), '应命中 A4');
 });
 
+t('口语缩写被拦下', () => {
+  const hits = languageGate.check('这一节说明字体怎么设。');
+  assert.ok(hits.some((h) => h.rule === 'Z8'), '应命中 Z8');
+});
+
+t('书面语写法不被误拦', () => {
+  const ok = languageGate.check('这一节说明怎样设置字体。');
+  assert.ok(!ok.some((h) => h.rule === 'Z8'), '不应命中 Z8');
+});
+
+t('「另一校」不被单字词规则误拦', () => {
+  const ok = languageGate.check('不要把上一版的内容投给另一所学校。');
+  assert.ok(!ok.some((h) => h.rule === 'Z4'), '不应命中 Z4');
+});
+
 console.log('体例门禁');
 
 const baseVariant = {
