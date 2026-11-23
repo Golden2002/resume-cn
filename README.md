@@ -134,7 +134,7 @@ forbidEntities:
 
 ## 排版
 
-下面这些数值来自那份定稿的生成脚本，我逐项抄过来，没有从 PDF 上反推。
+下面这些数值来自定稿的生成脚本，我逐项抄到模板里。
 
 | 层级 | 元素 | 字号 | 字重 |
 |---|---|---|---|
@@ -144,7 +144,7 @@ forbidEntities:
 | 辅助 | 日期、单位、联系方式 | 9.5 pt | 常规 |
 | 页脚 | 页码 | 8 pt | 常规 |
 
-字号只分这五档。档位再多，读者反而看不出先看哪里。
+字号只分这五档，档位再多，读者反而分不出主次。
 
 页边距上下 41 pt、左右 54 pt。分区标题条高 20.4 pt，白字前面垫一个空格当左边距；条高靠最小行高写死，因为 LibreOffice 对单行段落按字号给最小行高，调行距倍数不起作用。
 
@@ -170,7 +170,7 @@ node src/cli.js fonts define --family "我的字体" --regular D:\fonts\r.ttf
 node src/cli.js check --data my-resume --variant teacher-biology --font "我的字体"
 ```
 
-换字体会不会影响版面？行高在 `lineHeightPt` 里写成固定值，所以不会。实测把微软雅黑换成思源黑体，两页仍是两页。
+行高在 `lineHeightPt` 里写成固定值，所以换字体不影响版面。把微软雅黑换成思源黑体，两页仍是两页。
 
 检查程序会比对 PDF 里的字体名，确认声明的字体真的用上了。PDF 里只记拉丁名，微软雅黑在里头叫 `MicrosoftYaHei`，所以项目里带一张对照表，覆盖雅黑、思源、Noto、宋体、黑体、楷体、仿宋、苹方。
 
@@ -200,8 +200,8 @@ Word 铺段落底色时不理会左右缩进，LibreOffice 会按缩进把底色
 
 ## 参考
 
-- [RenderCV](https://github.com/rendercv/rendercv)：YAML 写内容、排版交给模板的思路，我用之前读过它的结构。
-- [JSON Resume](https://jsonresume.org)：字段名的基线，`cn` 下面放中文场景的扩展。
+- [RenderCV](https://github.com/rendercv/rendercv)：内容写在 YAML 里，版式交给模板。这个分法我照搬了。
+- [JSON Resume](https://jsonresume.org)：字段名沿用它，中文场景的字段放在 `cn` 下面。
 - [paeg-teaching-language-skill](https://github.com/Golden2002/paeg-teaching-language-skill)：中文写作规范的来源，`skills/chinese-writing/` 里的标点、数字两节由它整理而来。
 
 ## 许可
