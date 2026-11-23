@@ -137,6 +137,12 @@ function loadContext() {
   if (!fs.existsSync(templatePath)) throw new Error('找不到模板清单：' + templatePath);
   const template = readStructured(templatePath);
 
+  // --font 覆盖模板声明的字体，方便别人在没装默认字体的机器上换字体
+  const fontOverride = arg('font');
+  if (fontOverride) {
+    template.font = Object.assign({}, template.font, { family: fontOverride, eastAsia: fontOverride });
+  }
+
   return { dataDir, resumePath, variantPath, variant, data, templateDir, template };
 }
 
@@ -344,9 +350,12 @@ function cmdFonts() {
   if (sub === 'status' || !sub) {
     const st = fonts.status(family, fontsDir);
     console.log(`字体族：${st.family}`);
+    console.log(`系统已安装：${st.systemInstalled ? green('是') : yellow('否')}`);
     console.log(`项目内字体目录：${st.fontsDir}`);
     console.log(`已就位：${st.localFiles.length ? st.localFiles.map((f) => path.basename(f)).join('、') : '无'}`);
-    if (st.missingFiles.length) console.log(yellow(`缺：${st.missingFiles.map((f) => path.basename(f)).join('、')}`));
+    if (st.missingFiles.length && !st.systemInstalled) {
+      console.log(yellow(`缺：${st.missingFiles.map((f) => path.basename(f)).join('、')}`));
+    }
     console.log('\n安装指引：');
     for (const s of st.howToInstall.steps) console.log('  - ' + s);
     return;
@@ -393,10 +402,11 @@ async function main() {
 
 用法：
   resume-cn new <目录>                       用示例数据建一个数据目录
-  resume-cn build --data <目录> --variant <名> [--no-pdf] [--pdf-cmd <命令>]
+  resume-cn build --data <目录> --variant <名> [--font <字体族>] [--no-pdf] [--pdf-cmd <命令>]
   resume-cn check --data <目录> --variant <名>  渲染并跑三道门禁
   resume-cn fonts install|define|status  [--family <字体族>] [--fonts-dir <目录>]
 
+字体：模板默认微软雅黑，仓库不分发字体文件。没有默认字体时用 --font 指定自己装的字体。
 门禁失败退出码为 1，可直接挂 CI。`);
 }
 

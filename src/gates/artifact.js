@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { findChineseIds } = require('./idcheck');
+const { latinTokens } = require('../fonts');
 
 /** 尝试用外部工具抽文本，返回 {tool, text} 列表。装了什么用什么，缺了就记缺。 */
 function extractText(pdfPath) {
@@ -175,16 +176,23 @@ function scanPii(dir) {
 function checkDeclaredFont(pdfPath, acceptableFamilies) {
   const raw = fs.readFileSync(pdfPath).toString('latin1');
   const baseFonts = [...raw.matchAll(/\/BaseFont\s*\/([^\s/\[\]<>()]+)/g)].map((m) => m[1]);
-  const strip = (s) => String(s || '').replace(/^[A-Z]{6}\+/, '').replace(/[^A-Za-z]/g, '').toLowerCase();
+  const strip = (s) => String(s || '').replace(/^[A-Z]{6}\+/, '').replace(/[^A-Za-z0-9]/g, '').toLowerCase();
   const present = [...new Set(baseFonts.map(strip))];
   const wanted = (acceptableFamilies || []).filter(Boolean);
-  const matched = wanted.find((fam) => {
-    const t = strip(fam);
-    return t && present.some((p) => p.includes(t) || t.includes(p));
-  });
+  let matched = null;
+  let matchedToken = null;
+  for (const fam of wanted) {
+    const hit = latinTokens(fam).find((t) => present.some((p) => p.includes(t)));
+    if (hit) {
+      matched = fam;
+      matchedToken = hit;
+      break;
+    }
+  }
   return {
     expected: wanted,
-    matched: matched || null,
+    matched,
+    matchedToken,
     found: !!matched,
     baseFonts: [...new Set(baseFonts)].slice(0, 16),
   };

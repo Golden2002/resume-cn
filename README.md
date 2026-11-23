@@ -46,8 +46,8 @@ src/         公开。渲染与门禁
 git clone <this repo> && cd resume-cn
 npm install
 
-# 1. 装字体（思源黑体，SIL OFL 1.1，仓库不分发字体文件）
-node src/cli.js fonts install --to-user
+# 1. 确认字体。默认用微软雅黑（Windows 自带）；没有的话按下一节换字体
+node src/cli.js fonts status --family 微软雅黑
 
 # 2. 建自己的数据目录
 node src/cli.js new my-resume
@@ -64,6 +64,29 @@ node src/cli.js check --data my-resume --variant teacher-biology
 `check` 的退出码为 1 时可直接挂进 CI。
 
 **PDF 转换依赖**：本项目不打包 LibreOffice。按以下顺序自动探测：`--pdf-cmd` → `RESUME_CN_PDF_CMD` → PATH 里的 `soffice`/`libreoffice` → `RESUME_CN_KIT_NODE` 与 `RESUME_CN_KIT_CLI` 指定的便携版。都没有时只出 DOCX 并如实报告。
+
+---
+
+## 字体怎么设
+
+**仓库不分发任何字体二进制**，只写字体名。模板默认是微软雅黑（Windows 自带，也是本项目日常在用的那款）。换字体有三条路：
+
+```bash
+# 一、系统里已经有，直接用（默认就是这条路）
+node src/cli.js fonts status --family 微软雅黑
+
+# 二、没有微软雅黑：下载思源黑体（SIL OFL 1.1）并装进用户字体目录
+node src/cli.js fonts install --to-user
+node src/cli.js check --data my-resume --variant teacher-biology --font "Source Han Sans SC"
+
+# 三、用自己手上任意一款字体
+node src/cli.js fonts define --family "我的字体" --regular D:\fonts\my-regular.ttf --bold D:\fonts\my-bold.ttf
+node src/cli.js check --data my-resume --variant teacher-biology --font "我的字体"
+```
+
+**换字体不改版式。** 原因在 `template.yaml` 的 `lineHeightPt`：行高是显式值，不随字体度量浮动。实测把微软雅黑换成思源黑体（后者默认行高约高 9%），页数仍是两页，纵向坐标只差 1pt 以内。
+
+**门禁会验字体是否真被用上。** `check` 比对 PDF 里的 `BaseFont`，并有一张家族别名表把中文族名映射到 PostScript 名（微软雅黑 对应 `MicrosoftYaHei`），所以不会因为 PDF 里只有拉丁名而误判失败。字体没装上时，转换器会静默替换成别的字体，这条门禁会当场报出来。
 
 ---
 
@@ -172,7 +195,8 @@ forbidEntities:               # 这一版不得出现这些机构名
 
 换模板＝换一份清单加一个布局实现。已知约束与建议：
 
-- 字体用思源黑体（与微软雅黑度量接近，切换不破坏版式）。**微软雅黑是商业字体，不要打进任何公开仓库。**
+- 字体默认微软雅黑，可用 `--font` 换成任意已装字体。**任何字体二进制都不要打进仓库**，包括本机常用的商业字体。
+- 行高写在 `lineHeightPt` 里，是显式值。这一条是版式稳定的前提：docx 的自动行高随字体度量变化，换个字体两页就会被顶成三页。
 - 证件照尺寸 72×96 pt，右上角，单元格 1500 twip。
 - 分区标题条带 `keepNext`，避免标题孤零零留在页底。
 
@@ -200,4 +224,6 @@ forbidEntities:               # 这一版不得出现这些机构名
 
 ## 许可
 
-代码 MIT。字体不入库：思源黑体由 Adobe 以 SIL Open Font License 1.1 发布，`fonts install` 从 Adobe 官方仓库下载并打印 SHA256，安装到用户字体目录，仓库内不含任何字体二进制。
+代码 MIT。
+
+字体：本仓库不含任何字体文件，`.gitignore` 排除了 `fonts/`。默认字体写在模板清单里，只是一个字体名。`fonts install` 从 Adobe 官方仓库下载思源黑体（SIL OFL 1.1）并打印 SHA256，装到用户字体目录，文件不随仓库分发。本机常用的商业字体请在自有授权范围内使用，不要提交进任何公开仓库。

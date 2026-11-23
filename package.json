@@ -13,7 +13,7 @@
   "scripts": {
     "build:example": "node src/cli.js build --data data/example --variant teacher-biology",
     "check:example": "node src/cli.js check --data data/example --variant teacher-biology",
-    "test": "node test/smoke.js"
+    "test": "node test/smoke.js && node test/fonts.js"
   },
   "dependencies": {
     "ajv": "^8.12.0",

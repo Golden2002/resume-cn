@@ -6,13 +6,16 @@ version: 1.0.0
 description: A4 两页体例，红色标题条，右上证件照，页脚页码。中文简历常用版式。
 
 font:
-  # 字体名写入 DOCX；PDF 转换时由系统字体目录解析，产物门禁会校验是否全部嵌入。
-  family: "Source Han Sans SC"
-  eastAsia: "Source Han Sans SC"
+  # 字体名写入 DOCX；PDF 转换时由系统字体目录解析，产物门禁会校验是否真的用上。
+  # 本仓库不分发任何字体文件：默认字体是本机常备的微软雅黑，别人机器上没有时，
+  # 用 --font 换成自己装的字体（如 fonts install 下的思源黑体）即可，版式不会变，
+  # 因为行高已在 lineHeightPt 里钉成显式值，不随字体度量浮动。
+  family: "微软雅黑"
+  eastAsia: "微软雅黑"
   fallback:
+    - "Source Han Sans SC"
     - "Noto Sans CJK SC"
-    - "微软雅黑"
-  # 备选度量参考：微软雅黑与思源黑体字面宽度接近，切换不破坏版式。
+    - "SimHei"
 
 colors:
   primary: "9D2235"

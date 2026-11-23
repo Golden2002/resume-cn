@@ -14,6 +14,7 @@ const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
 const https = require('https');
+const { spawnSync } = require('child_process');
 
 // 固定到具体发布版本的直链，不用 latest 之类的浮动地址。
 const KNOWN_SOURCES = {
@@ -61,6 +62,68 @@ function download(url, dest, redirects = 0) {
 
 function sha256(file) {
   return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+}
+
+/**
+ * 字体族名到 PDF 内 PostScript 名的别名表。
+ * PDF 的 BaseFont 只写拉丁名，中文字体族名（微软雅黑）在里面是 MicrosoftYaHei。
+ * 没有这张表，字体门禁会把「雅黑其实用上了」误判成失败。
+ */
+const FAMILY_ALIASES = {
+  微软雅黑: ['MicrosoftYaHei', 'MicrosoftYaHeiUI', 'MSYH'],
+  'Microsoft YaHei': ['MicrosoftYaHei'],
+  思源黑体: ['SourceHanSans'],
+  'Source Han Sans SC': ['SourceHanSansSC', 'SourceHanSans'],
+  'Source Han Sans': ['SourceHanSans'],
+  'Noto Sans CJK SC': ['NotoSansCJKsc', 'NotoSansCJK'],
+  宋体: ['SimSun', 'NSimSun'],
+  SimSun: ['SimSun'],
+  黑体: ['SimHei'],
+  SimHei: ['SimHei'],
+  楷体: ['KaiTi'],
+  KaiTi: ['KaiTi'],
+  仿宋: ['FangSong'],
+  FangSong: ['FangSong'],
+  苹方: ['PingFang'],
+  'PingFang SC': ['PingFang'],
+};
+
+/** 该字体族在 PDF 里可能出现的拉丁名（小写，去分隔符） */
+function latinTokens(family) {
+  const key = String(family || '').trim();
+  if (FAMILY_ALIASES[key]) return FAMILY_ALIASES[key].map((t) => t.toLowerCase());
+  const stripped = key.replace(/[^A-Za-z0-9]/g, '').toLowerCase();
+  return stripped ? [stripped] : [];
+}
+
+/** 系统字体清单文本（注册表或 fc-list），用于判断字体族是否已装 */
+let _sysCache = null;
+function systemFontText() {
+  if (_sysCache !== null) return _sysCache;
+  const chunks = [];
+  if (process.platform === 'win32') {
+    for (const key of [
+      'HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts',
+      'HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts',
+    ]) {
+      const r = spawnSync('reg', ['query', key], { encoding: 'utf8' });
+      if (r.status === 0 && r.stdout) chunks.push(r.stdout);
+    }
+  } else {
+    const fc = spawnSync('fc-list', [':', 'family'], { encoding: 'utf8' });
+    if (fc.status === 0 && fc.stdout) chunks.push(fc.stdout);
+  }
+  _sysCache = chunks.join('\n').toLowerCase();
+  return _sysCache;
+}
+
+/** 该字体族是否已在系统里可被解析 */
+function isInstalledOnSystem(family) {
+  const key = String(family || '').trim().toLowerCase();
+  if (!key) return false;
+  const text = systemFontText();
+  if (text.includes(key)) return true;
+  return latinTokens(family).some((t) => text.includes(t));
 }
 
 function userFontDir() {
@@ -139,6 +202,7 @@ function status(family, fontsDir) {
     localFiles: present,
     missingFiles: expected.filter((f) => !fs.existsSync(f)),
     userFontDir: userFontDir(),
+    systemInstalled: isInstalledOnSystem(family),
     howToInstall: instructions(family, expected, fontsDir),
   };
 }
@@ -195,4 +259,15 @@ function instructions(family, files, fontsDir) {
   return { family, target, steps };
 }
 
-module.exports = { KNOWN_SOURCES, install, define, status, installToUser, userFontDir, sha256 };
+module.exports = {
+  KNOWN_SOURCES,
+  FAMILY_ALIASES,
+  latinTokens,
+  isInstalledOnSystem,
+  install,
+  define,
+  status,
+  installToUser,
+  userFontDir,
+  sha256,
+};
