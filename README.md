@@ -1,6 +1,8 @@
 # resume-cn
 
-中文简历生成与检查工具。读一份个人信息和一份岗位配置，输出 Word 与 PDF，生成时检查体例、语言、字体和隐私。
+用户提供个人信息、证件照与证书等材料，配合不同的岗位描述，生成 Word 与 PDF 格式的个人简历。
+
+生成时检查体例、语言、字体与隐私，任一项不通过即中止，退出码为 1。
 
 ![license](https://img.shields.io/badge/license-MIT-9D2235) ![node](https://img.shields.io/badge/node-%E2%89%A5%2018-43853d)
 

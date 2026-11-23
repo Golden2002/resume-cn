@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400" role="img" aria-label="示例证件照">
+  <title>示例证件照</title>
+  <desc>浅灰底，深灰剪影，用于简历预览图，不含任何真实人物信息。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0f3f7"/>
+      <stop offset="1" stop-color="#dde3ea"/>
+    </linearGradient>
+    <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a3aebc"/>
+      <stop offset="1" stop-color="#7c8899"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#bg)"/>
+  <path d="M52 400c0-56 44-96 98-96s98 40 98 96z" fill="url(#fg)"/>
+  <circle cx="150" cy="158" r="64" fill="url(#fg)"/>
+  <path d="M150 308l-28 36 28 22 28-22z" fill="#f0f3f7" opacity="0.5"/>
+</svg>

@@ -7,6 +7,7 @@ basics:
   name: 张三
   label: 中学生物教师
   email: zhangsan@example.com
+  image: photo.png
   phone: "130-0000-0000"
   location:
     city: 上海市

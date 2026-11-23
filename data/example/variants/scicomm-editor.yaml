@@ -4,7 +4,7 @@ $schema: ../../schemas/variant.schema.json
 template: fudan-red
 label: 科普内容编辑
 pageBudget: 3
-photo: false
+photo: true
 locale: zh-CN
 
 content:

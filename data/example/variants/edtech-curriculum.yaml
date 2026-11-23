@@ -4,7 +4,7 @@ $schema: ../../schemas/variant.schema.json
 template: fudan-red
 label: 中学生物教研与课程设计
 pageBudget: 3
-photo: false
+photo: true
 locale: zh-CN
 
 content:
