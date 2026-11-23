@@ -1,0 +1,28 @@
+# 场景三：出版社、媒体的科普编辑岗
+$schema: ../../schemas/variant.schema.json
+
+template: fudan-red
+label: 科普内容编辑
+pageBudget: 3
+photo: false
+locale: zh-CN
+
+content:
+  - section: education
+    title: 教育背景
+  - section: work
+    title: 写作与编辑经历
+    ids: [w-scicomm, w-edtech, w-school, w-ta, w-competition]
+  - section: publications
+    title: 发表作品
+  - section: projects
+    title: 内容项目
+    ids: [proj-curriculum, proj-atlas, proj-dashboard]
+  - section: skills
+    title: 能力与工具
+    ids: [skill-writing, skill-english, skill-lab, skill-course, skill-data]
+  - section: awards
+    title: 荣誉与获奖
+
+forbidEntities:
+  - 某某出版社

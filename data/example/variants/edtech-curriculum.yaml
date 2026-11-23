@@ -1,0 +1,28 @@
+# 场景二：教育科技公司的教研岗
+$schema: ../../schemas/variant.schema.json
+
+template: fudan-red
+label: 中学生物教研与课程设计
+pageBudget: 3
+photo: false
+locale: zh-CN
+
+content:
+  - section: education
+    title: 教育背景
+  - section: work
+    title: 教研与教学经历
+    ids: [w-edtech, w-school, w-ta, w-competition, w-scicomm]
+  - section: projects
+    title: 课程与产品
+    ids: [proj-curriculum, proj-dashboard, proj-atlas]
+  - section: skills
+    title: 能力与工具
+    ids: [skill-course, skill-data, skill-lab, skill-writing]
+  - section: awards
+    title: 荣誉与获奖
+  - section: publications
+    title: 作品与产出
+
+forbidEntities:
+  - 某某科技有限公司

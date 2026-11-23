@@ -1,43 +1,27 @@
-# 岗位变体：中学生物教师
-# 内容选用写在这一层。不写进 resume.yaml，也不写进模板。
+# 场景一：中学教师岗
 $schema: ../../schemas/variant.schema.json
 
 template: fudan-red
 label: 中学生物教师
-pageBudget: 2
-photo: false # 示例数据不带照片；填好自己的 image 后改成 true
+pageBudget: 3
+photo: false
 locale: zh-CN
-
-target:
-  role: 中学生物教师
-  org: 上海某中学
-  note: 公开投递
 
 content:
   - section: education
     title: 教育背景
   - section: work
     title: 教学与实践经历
-    bullets: 2
+    ids: [w-school, w-ta, w-competition, w-edtech, w-scicomm]
   - section: projects
     title: 课程与项目
+    ids: [proj-curriculum, proj-atlas, proj-dashboard]
   - section: awards
     title: 荣誉与获奖
   - section: certificates
     title: 证书与资质
-  - section: publications
-    title: 论文与作品
   - section: skills
     title: 语言与技能
-  - section: languages
 
-# 这一版不得出现另一所学校的名字。填上你上一版定制过的校名，防止串味。
 forbidEntities:
   - 某某实验学校
-  - 某某中学
-
-# 个人陈述默认关闭。只有招聘公告明确要求时才启用，且渲染器会把它放在最后。
-# statement:
-#   title: 补充说明
-#   text: 此处填写不超过 300 字的补充说明。
-#   maxChars: 300

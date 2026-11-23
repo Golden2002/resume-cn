@@ -1,0 +1,28 @@
+# 场景四：高校与研究所的科研助理岗
+$schema: ../../schemas/variant.schema.json
+
+template: fudan-red
+label: 科研助理
+pageBudget: 3
+photo: false
+locale: zh-CN
+
+content:
+  - section: education
+    title: 教育背景
+  - section: work
+    title: 科研与教学经历
+    ids: [w-ta, w-competition, w-school, w-edtech, w-scicomm]
+  - section: projects
+    title: 研究项目
+    ids: [proj-atlas, proj-dashboard, proj-curriculum]
+  - section: publications
+    title: 论文与作品
+  - section: skills
+    title: 实验与计算
+    ids: [skill-lab, skill-data, skill-english, skill-writing]
+  - section: awards
+    title: 荣誉与获奖
+
+forbidEntities:
+  - 某某研究所

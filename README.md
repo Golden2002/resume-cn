@@ -51,6 +51,19 @@ node src/cli.js check --data my-resume --variant teacher-biology
 
 产物默认写到 `out/<数据目录>-<变体名>/`，可用 `--out` 指定。
 
+## 场景变体
+
+同一份信息可以生成面向不同行业的简历。下面四份出自同一份示例数据，差别在取哪些条目、按什么次序排。
+
+![四个场景的变体](docs/assets/variants.png)
+
+| 变体 | 面向岗位 | 取用重点 |
+|---|---|---|
+| `teacher-biology` | 中学教师 | 实习教学与课程项目排在前面 |
+| `edtech-curriculum` | 教研与课程设计 | 教研实习与数据能力排在前面 |
+| `scicomm-editor` | 科普编辑 | 写作经历与发表作品排在前面 |
+| `research-assistant` | 科研助理 | 助教经历与研究项目排在前面 |
+
 ## 数据格式
 
 `data/<目录>/resume.yaml`，字段名沿用 [JSON Resume](https://jsonresume.org)，中文场景的字段放在 `cn` 下。

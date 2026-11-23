@@ -1,6 +1,6 @@
 # resume-cn 示例数据（虚构人物，请勿在此填真实信息）
-# 字段命名以 JSON Resume 为基线，cn 下为中文场景扩展。
-# 注意：日期与编号一律加引号。YAML 会把 2024.09 解析成数字，大整数还会丢精度。
+# 字段名沿用 JSON Resume，中文场景的字段放在 cn 下。
+# 日期与编号一律加引号：YAML 会把 2024.09 解析成数字，18 位编号会丢精度。
 $schema: ../../schemas/resume.schema.json
 
 basics:
@@ -11,85 +11,102 @@ basics:
   location:
     city: 上海市
     region: 杨浦区
-  profiles:
-    - network: GitHub
-      username: example
-      url: https://github.com/example
   cn:
     gender: 男
     ethnicity: 汉族
     birthDate: "2000-01"
     politicalStatus: 共青团员
     nativePlace: 江苏省南京市
-    studentId: "202400001"
+    headline: 复旦大学生命科学学院 · 生物学硕士（在读）
 
 education:
   - id: edu-ms
-    tags: [biology, teaching]
+    tags: [biology, research]
     institution: 复旦大学
-    area: 生命科学学院 · 生物学
-    studyType: 硕士（在读）
+    area: 生命科学学院
+    studyType: 生物学硕士（在读）
     startDate: "2024.09"
     endDate: "2027.06（预计）"
     highlights:
-      - 我在硕士研究生招生考试中取得专业第一名的初试成绩；研究方向为群体遗传学与演化生物学。
-      - 我修读了分子生物学、遗传学、生物信息学与科学教育专题课程，并在实验室承担数据分析工作。
-    cn:
-      level: 硕士
+      - 我在硕士研究生招生考试中取得专业第一名的初试成绩，研究方向为植物激素信号与根系发育。
+      - 我修读了分子生物学、遗传学、生物信息学与科学教育专题课程，并承担实验室的数据分析工作。
+      - 我担任院研究生会学术部干事，组织过六场跨学科读书会，累计参与两百余人次。
 
   - id: edu-bs
+    tags: [biology]
     institution: 南京大学
-    area: 生命科学学院 · 生物科学
-    studyType: 学士
+    area: 生命科学学院
+    studyType: 生物科学 学士
     startDate: "2020.09"
     endDate: "2024.06"
     highlights:
-      - 我在本科阶段获得校级一等奖学金两次，毕业论文研究植物激素信号通路。
-    cn:
-      level: 本科
+      - 我在本科阶段获得校级一等奖学金两次，专业排名前百分之十。
+      - 我的毕业论文研究拟南芥根毛发育的转录调控，独立完成显微观察与基因表达定量。
 
   - id: edu-hs
     institution: 南京市第九中学
     area: 理科（物理、化学、生物）
-    studyType: 高中
     startDate: "2017.09"
     endDate: "2020.06"
     highlights:
-      - 我在高中阶段选择物理、化学、生物三科，并参加市级生物学科竞赛。
-    cn:
-      level: 高中
+      - 我在高中阶段选择物理、化学、生物三科，参加市级中学生生物学科竞赛并获得二等奖。
 
 work:
-  - id: work-ta
+  - id: w-ta
     tags: [teaching, biology]
-    name: 复旦大学 生命科学学院
     position: 课程助教
+    name: "**复旦大学** 生命科学学院"
     startDate: "2025.09"
     endDate: "2026.01"
     highlights:
       - 我承担生物化学课程的课后答疑与作业批改，每周固定两个半天面向本科生开放。
       - 我整理了十二个易错知识点的对照讲义，被课程组沿用到下一学期。
-  - id: work-school
-    tags: [teaching, middle-school]
-    name: 南京市第九中学
+      - 我协助任课教师设计两次随堂测验，批改后按错题类型汇总成讲评提纲。
+
+  - id: w-school
+    tags: [teaching]
     position: 生物学科实习教师
+    name: "**南京市第九中学**"
     startDate: "2024.03"
     endDate: "2024.06"
     highlights:
-      - 我独立完成八课时的课堂教学，独立设计教案与随堂练习。
-      - 我协助班主任开展班会与家长沟通工作，记录了三十余人的学情档案。
-  - id: work-competition
+      - 我独立完成八课时的课堂教学，教案与随堂练习都由自己编写。
+      - 我协助班主任开展班会与家长沟通，记录了三十余人的学情档案。
+      - 我设计了一套校园植物观察作业，学生在两周内提交了一百二十份观察记录。
+
+  - id: w-competition
     tags: [teaching, competition]
+    position: 竞赛教练
     name: 市级中学生生物学竞赛培训
-    position: 教练
     startDate: "2025.03"
     endDate: "2025.06"
     highlights:
       - 我负责遗传学与细胞生物学两个模块的实验指导，独立编写实验讲义六讲。
+      - 我带的两名学生进入市级复赛，其中一人获得一等奖。
+
+  - id: w-edtech
+    tags: [curriculum, product]
+    position: 教研实习生
+    name: 某教育科技公司 中学生物学科组
+    startDate: "2023.07"
+    endDate: "2023.09"
+    highlights:
+      - 我参与初中生物同步课程的知识点拆分，按课标整理出四册共一百八十个知识点条目。
+      - 我把三十道易错题改写成带解析的练习题，上线后两周内使用量超过两千次。
+
+  - id: w-scicomm
+    tags: [writing, scicomm]
+    position: 科普编辑
+    name: 校园科普公众号“生物闲聊墙”
+    startDate: "2022.03"
+    endDate: "至今"
+    highlights:
+      - 我负责选题与约稿，累计发表科普文章十二篇，内容覆盖微生物学、感官生理学与演化生物学。
+      - 我独立完成配图与排版，单篇最高阅读量八千余次。
 
 projects:
   - id: proj-curriculum
-    tags: [teaching]
+    tags: [curriculum, teaching]
     name: 校园生物多样性校本课程
     description: 独立设计
     startDate: "2025.03"
@@ -97,20 +114,54 @@ projects:
     highlights:
       - 我以校园绿地为场地，设计为期八周的调查课程，包含样方设置、物种鉴定与数据整理三个环节。
       - 我把学生采集的记录整理成一份物种名录，覆盖乔木、灌木与鸟类共一百余种。
+      - 课程结束后我写了四千字的教学反思，被教研组选为校本课程范例。
+
+  - id: proj-atlas
+    tags: [curriculum, digital]
+    name: 校园植物数字标本库
+    description: 设计与搭建
+    startDate: "2025.09"
+    endDate: "2026.01"
+    highlights:
+      - 我拍摄并标注校园植物三百二十种，整理成可检索的网页标本库。
+      - 我把标本库接入两节生物课，学生按科属检索后完成分类练习。
+
+  - id: proj-dashboard
+    tags: [data, teaching]
+    name: 班级学情分析看板
+    description: 独立开发
+    startDate: "2024.09"
+    endDate: "2024.12"
+    highlights:
+      - 我用 Python 读取随堂测验成绩，自动生成知识点掌握度图表，替代了手工统计。
+      - 我把看板交给备课组使用，一学期内累计处理八次测验数据。
 
 awards:
   - id: award-scholarship
-    title: 校级一等奖学金
-    date: "2022"
+    label: 学业
+    title: 校级一等奖学金（两次）
+    date: "2021、2022"
     awarder: 南京大学
   - id: award-competition
+    label: 竞赛
     title: 市级中学生生物学科竞赛优秀指导教师
     date: "2025"
     awarder: 市教研室
   - id: award-teaching
+    label: 教学
     title: 院级教学技能比赛二等奖
     date: "2025"
     awarder: 复旦大学生命科学学院
+  - id: award-course
+    label: 课程
+    title: 校本课程设计评比一等奖
+    date: "2025"
+    awarder: 南京市第九中学
+  - id: award-writing
+    label: 写作
+    title: 校园科普作品评选优秀奖
+    date: "2023"
+    awarder: 校科协
 
 certificates:
   - id: cert-teacher
@@ -134,23 +185,46 @@ certificates:
     issuer: 教育部考试中心
     cn:
       score: "580"
+  - id: cert-firstaid
+    name: 红十字救护员证
+    date: "2024.05"
+    issuer: 江苏省红十字会
 
 publications:
   - id: pub-paper
-    name: 一份关于城市绿地植物多样性的调查记录
+    name: 城市绿地植物多样性的调查记录
     publisher: 校级学生学术刊物
     releaseDate: "2025"
+  - id: pub-popular
+    name: 为什么树叶到了秋天会变黄
+    publisher: 生物闲聊墙
+    releaseDate: "2023.10"
+  - id: pub-lesson
+    name: 初中生物“植物的呼吸”课时设计
+    publisher: 区教研资料汇编
+    releaseDate: "2024.11"
 
 skills:
   - id: skill-lab
+    tags: [biology]
     name: 实验技能
-    summary: 分子克隆、聚合酶链式反应、蛋白免疫印迹、植物组织培养
-  - id: skill-data
-    name: 数据处理
-    summary: 使用 R 与 Python 完成统计分析、绘图与可重复的脚本化流程
+    summary: 分子克隆、聚合酶链式反应、蛋白免疫印迹、植物组织培养、显微观察与图像采集
   - id: skill-course
+    tags: [teaching]
     name: 课程开发
-    summary: 独立完成校本课程的选题、框架设计、教案编写与教学实施
+    summary: 独立完成校本课程的选题、框架设计、教案编写与教学实施，累计授课四十余课时
+  - id: skill-data
+    tags: [data]
+    name: 数据处理
+    summary: 用 R 与 Python 完成统计分析、绘图与脚本化流程，能独立处理千行量级的成绩与调查数据
+  - id: skill-writing
+    tags: [writing]
+    name: 写作与编辑
+    summary: 科普文章、教案、讲义与教研报告的撰写；熟悉 Markdown 与基础排版
+  - id: skill-english
+    tags: [english]
+    name: 英语能力
+    summary: 六级 580 分，可阅读专业文献并撰写英文实验记录
 
 languages:
   - id: lang-zh
