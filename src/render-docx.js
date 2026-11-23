@@ -60,19 +60,40 @@ function makeRuns(template) {
       // keepNext：标题条必须紧跟其下第一条内容，避免标题孤零零留在页底
       keepNext: true,
       shading: { type: ShadingType.CLEAR, fill: C.primary },
-      spacing: Object.assign({ before: 128, after: 54 }, exactLine(LH.section || 16.5)),
-      indent: { left: 40, right: 40 },
+      // 左右不留缩进，底色才能铺满整栏。缩进会让底色跟着收窄，字就露在红条外面
+      indent: { left: 0, right: 0 },
+      spacing: Object.assign({ before: 128, after: 54 }, exactLine(LH.section || 20)),
       children: [new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' })],
     });
   };
 
+  /**
+   * 支持行内 **局部加粗**。用于在灰色的单位名里点出关键机构，
+   * 例如「山东省烟台第一中学这一类信息是重要信息，需要加粗」那种强调。
+   * 加粗段同时改用正文色，形成黑体加粗的效果。
+   */
+  const segmentRuns = (text, o = {}) => {
+    const s = String(text ?? '');
+    if (s.indexOf('**') < 0) return [run(s, o)];
+    const out = [];
+    for (const part of s.split(/(\*\*[^*]+\*\*)/g)) {
+      if (!part) continue;
+      if (/^\*\*[^*]+\*\*$/.test(part)) {
+        out.push(run(part.slice(2, -2), Object.assign({}, o, { bold: true, color: C.ink })));
+      } else {
+        out.push(run(part, o));
+      }
+    }
+    return out;
+  };
+
   const entryLine = (title, right, org) =>
     new Paragraph({
-      spacing: Object.assign({ before: 74, after: 20 }, exactLine(LH.body || 15.9)),
+      spacing: Object.assign({ before: 74, after: 20 }, exactLine(LH.body || 17.5)),
       tabStops: [{ type: TabStopType.RIGHT, position: template.geometry.tabStopTwip }],
       children: [
-        run(title, { bold: true }),
-        ...(org ? [run('  ｜  ' + org, { color: C.muted, size: T.small })] : []),
+        ...segmentRuns(title, { bold: true }),
+        ...(org ? [run('  ｜  ', { color: C.muted, size: T.small }), ...segmentRuns(org, { color: C.muted, size: T.small })] : []),
         ...(right ? [run('\t' + right, { color: C.muted, size: T.small })] : []),
       ],
     });
@@ -80,14 +101,14 @@ function makeRuns(template) {
   const bullet = (children) =>
     new Paragraph({
       numbering: { reference: 'dot', level: 0 },
-      spacing: Object.assign({ before: 10, after: 10 }, exactLine(LH.body || 15.9)),
-      children: Array.isArray(children) ? children : [run(children)],
+      spacing: Object.assign({ before: 10, after: 10 }, exactLine(LH.body || 17.5)),
+      children: Array.isArray(children) ? children : segmentRuns(children),
     });
 
   const para = (children) =>
     new Paragraph({
-      spacing: Object.assign({ before: 18, after: 18 }, exactLine(LH.body || 15.9)),
-      children: Array.isArray(children) ? children : [run(children)],
+      spacing: Object.assign({ before: 18, after: 18 }, exactLine(LH.body || 17.5)),
+      children: Array.isArray(children) ? children : segmentRuns(children),
     });
 
   const inlineRow = (label, text) => {
@@ -96,11 +117,11 @@ function makeRuns(template) {
       kids.push(run(label, { bold: true, color: C.primary }));
       kids.push(run('　'));
     }
-    kids.push(run(text));
+    kids.push(...segmentRuns(text));
     return bullet(kids);
   };
 
-  return { FONT, run, sectionBar, entryLine, bullet, para, inlineRow, records };
+  return { FONT, run, segmentRuns, sectionBar, entryLine, bullet, para, inlineRow, records };
 }
 
 /** 按变体配置从数据里挑条目。给了 ids 就按 ids 的顺序挑，可用它给不同岗位排不同的先后。 */
