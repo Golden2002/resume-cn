@@ -16,7 +16,7 @@
 ## 环境要求
 
 - Node.js 18 或更高
-- 转 PDF 需要下列之一：LibreOffice（`soffice` 在 PATH 里）、Microsoft Word（仅 Windows）、自定义转换命令
+- 转 PDF 需要下面任一条件：LibreOffice（`soffice` 在 PATH 里）、Microsoft Word（仅 Windows）、自定义转换命令
 
 ## 安装
 
