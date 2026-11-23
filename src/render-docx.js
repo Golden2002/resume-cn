@@ -76,49 +76,25 @@ function makeRuns(template) {
   const sectionBar = (title) => {
     const cfg = SP.section || {};
     records.push(String(title));
-    const width = template.geometry.contentWidthTwip;
-    const padTB = cfg.cellMarginTopBottom === undefined ? 55 : cfg.cellMarginTopBottom;
-    const padLR = cfg.cellMarginLeft === undefined ? 100 : cfg.cellMarginLeft;
-
-    // 单元格边距不占段落间距，所以上下留白用两个极小的空段落补出来
-    const gapBefore = new Paragraph({
-      spacing: { before: Math.max(0, (cfg.before === undefined ? 220 : cfg.before) - 30), after: 0 },
-      children: [new TextRun({ text: '', font: FONT, size: 2 })],
-    });
-    const gapAfter = new Paragraph({
-      spacing: { before: 0, after: Math.max(0, (cfg.after === undefined ? 96 : cfg.after) - 30) },
-      children: [new TextRun({ text: '', font: FONT, size: 2 })],
-    });
-
-    const bar = new Table({
-      width: { size: width, type: WidthType.DXA },
-      columnWidths: [width],
-      borders: noBorders(),
-      rows: [
-        new TableRow({
-          cantSplit: true,
-          children: [
-            new TableCell({
-              width: { size: width, type: WidthType.DXA },
-              shading: { type: ShadingType.CLEAR, fill: C.primary },
-              margins: { top: padTB, bottom: padTB, left: padLR, right: padLR },
-              verticalAlign: VerticalAlign.CENTER,
-              children: [
-                new Paragraph({
-                  // 单元格内行高写死，条高才可预期；居中靠单元格的 verticalAlign
-                  spacing: { before: 0, after: 0, line: 280, lineRule: LineRuleType.EXACT },
-                  children: [
-                    new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        }),
-      ],
-    });
-
-    return [gapBefore, bar, gapAfter];
+    // 用段落实现条，不用表格。表格两侧要垫空段落，空段落各占一整行，
+    // 条上下的留白会翻倍（实测 50.7 / 26.2，基准是 14.5 / 6.9）。
+    // 条高用固定行高写死，白字在条内的上下偏差约 1.5 pt。
+    const barHeight = cfg.heightPt || 20.4;
+    return [
+      new Paragraph({
+        keepNext: true,
+        shading: { type: ShadingType.CLEAR, fill: C.primary },
+        indent: { left: cfg.indentLeft || 0, right: cfg.indentRight || 0 },
+        spacing: Object.assign(
+          { before: cfg.before === undefined ? 220 : cfg.before, after: cfg.after === undefined ? 96 : cfg.after },
+          { line: Math.round(barHeight * 20), lineRule: LineRuleType.EXACT }
+        ),
+        children: [
+          ...(cfg.textInset ? [new TextRun({ text: cfg.textInset, font: FONT, size: halfPt(T.sectionTitle), color: 'FFFFFF' })] : []),
+          new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' }),
+        ],
+      }),
+    ];
   };
 
   /**

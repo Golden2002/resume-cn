@@ -87,12 +87,10 @@ spacing:
   section:
     before: 220
     after: 96
-    # 分区标题条做成单元格，不用段落底色。段落底色只能随行高变化，
-    # 多出来的行距全跑到字上方，白字会偏下，做不到垂直居中；
-    # 单元格的 verticalAlign 能把字真正居中，左右留白也能用单元格边距精确给。
-    cellMarginTopBottom: 60
-    # 左内边距 27 twips，约 1.35 pt。基准的首字距条边 1.44 pt，差的是字形自身的侧距。
-    cellMarginLeft: 27
+    # 条用段落实现，不用单元格。单元格两侧要垫空段落，空段落各占一整行，
+    # 条上下的留白会翻倍。条高用固定行高写死；白字前垫一个空格当左内边距。
+    heightPt: 20.4
+    textInset: " "
     indentLeft: 0
     indentRight: 0
   entry:
