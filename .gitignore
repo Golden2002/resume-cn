@@ -1,0 +1,22 @@
+# 私有数据：绝不提交
+data/*
+!data/example/
+
+# 产物
+out/
+dist/
+*.docx
+*.pdf
+
+# 字体（体积大且各自许可证不同，不入库）
+fonts/
+.fonts/
+
+# 依赖与缓存
+node_modules/
+.cache/
+npm-debug.log*
+
+# 系统
+.DS_Store
+Thumbs.db

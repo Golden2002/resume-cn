@@ -1,0 +1,23 @@
+{
+  "name": "resume-cn",
+  "version": "0.1.0",
+  "description": "中文简历文档工程：用数据驱动中文简历，并对体例、语言、产物做可机器判定的门禁",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "resume-cn": "src/cli.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build:example": "node src/cli.js build --data data/example --variant teacher-biology",
+    "check:example": "node src/cli.js check --data data/example --variant teacher-biology",
+    "test": "node test/smoke.js"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "docx": "^9.0.0",
+    "js-yaml": "^4.1.0"
+  }
+}

@@ -1,0 +1,167 @@
+# resume-cn 示例数据（虚构人物，请勿在此填真实信息）
+# 字段命名以 JSON Resume 为基线，cn 下为中文场景扩展。
+# 注意：日期与编号一律加引号。YAML 会把 2024.09 解析成数字，大整数还会丢精度。
+$schema: ../../schemas/resume.schema.json
+
+basics:
+  name: 张三
+  label: 中学生物教师
+  email: zhangsan@example.com
+  phone: "130-0000-0000"
+  location:
+    city: 上海市
+    region: 杨浦区
+  profiles:
+    - network: GitHub
+      username: example
+      url: https://github.com/example
+  cn:
+    gender: 男
+    ethnicity: 汉族
+    birthDate: "2000-01"
+    politicalStatus: 共青团员
+    nativePlace: 江苏省南京市
+    studentId: "202400001"
+
+education:
+  - id: edu-ms
+    tags: [biology, teaching]
+    institution: 复旦大学
+    area: 生命科学学院 · 生物学
+    studyType: 硕士（在读）
+    startDate: "2024.09"
+    endDate: "2027.06（预计）"
+    highlights:
+      - 我在硕士研究生招生考试中取得专业第一名的初试成绩；研究方向为群体遗传学与演化生物学。
+      - 我修读了分子生物学、遗传学、生物信息学与科学教育专题课程，并在实验室承担数据分析工作。
+    cn:
+      level: 硕士
+
+  - id: edu-bs
+    institution: 南京大学
+    area: 生命科学学院 · 生物科学
+    studyType: 学士
+    startDate: "2020.09"
+    endDate: "2024.06"
+    highlights:
+      - 我在本科阶段获得校级一等奖学金两次，毕业论文研究植物激素信号通路。
+    cn:
+      level: 本科
+
+  - id: edu-hs
+    institution: 南京市第九中学
+    area: 理科（物理、化学、生物）
+    studyType: 高中
+    startDate: "2017.09"
+    endDate: "2020.06"
+    highlights:
+      - 我在高中阶段选择物理、化学、生物三科，并参加市级生物学科竞赛。
+    cn:
+      level: 高中
+
+work:
+  - id: work-ta
+    tags: [teaching, biology]
+    name: 复旦大学 生命科学学院
+    position: 课程助教
+    startDate: "2025.09"
+    endDate: "2026.01"
+    highlights:
+      - 我承担生物化学课程的课后答疑与作业批改，每周固定两个半天面向本科生开放。
+      - 我整理了十二个易错知识点的对照讲义，被课程组沿用到下一学期。
+  - id: work-school
+    tags: [teaching, middle-school]
+    name: 南京市第九中学
+    position: 生物学科实习教师
+    startDate: "2024.03"
+    endDate: "2024.06"
+    highlights:
+      - 我独立完成八课时的课堂教学，独立设计教案与随堂练习。
+      - 我协助班主任开展班会与家长沟通工作，记录了三十余人的学情档案。
+  - id: work-competition
+    tags: [teaching, competition]
+    name: 市级中学生生物学竞赛培训
+    position: 教练
+    startDate: "2025.03"
+    endDate: "2025.06"
+    highlights:
+      - 我负责遗传学与细胞生物学两个模块的实验指导，独立编写实验讲义六讲。
+
+projects:
+  - id: proj-curriculum
+    tags: [teaching]
+    name: 校园生物多样性校本课程
+    description: 独立设计
+    startDate: "2025.03"
+    endDate: "2025.08"
+    highlights:
+      - 我以校园绿地为场地，设计为期八周的调查课程，包含样方设置、物种鉴定与数据整理三个环节。
+      - 我把学生采集的记录整理成一份物种名录，覆盖乔木、灌木与鸟类共一百余种。
+
+awards:
+  - id: award-scholarship
+    title: 校级一等奖学金
+    date: "2022"
+    awarder: 南京大学
+  - id: award-competition
+    title: 市级中学生生物学科竞赛优秀指导教师
+    date: "2025"
+    awarder: 市教研室
+  - id: award-teaching
+    title: 院级教学技能比赛二等奖
+    date: "2025"
+    awarder: 复旦大学生命科学学院
+
+certificates:
+  - id: cert-teacher
+    name: 高级中学教师资格证
+    date: "2026.07"
+    issuer: 上海市
+    credentialId: "202600000000000001"
+    cn:
+      subject: 生物
+  - id: cert-mandarin
+    name: 普通话水平测试等级证书
+    date: "2021.05"
+    issuer: 江苏省语言文字工作委员会
+    credentialId: "3200000000001"
+    cn:
+      level: 二级甲等
+      score: "90.5"
+  - id: cert-cet6
+    name: 全国大学英语六级考试成绩报告单
+    date: "2022.12"
+    issuer: 教育部考试中心
+    cn:
+      score: "580"
+
+publications:
+  - id: pub-paper
+    name: 一份关于城市绿地植物多样性的调查记录
+    publisher: 校级学生学术刊物
+    releaseDate: "2025"
+
+skills:
+  - id: skill-lab
+    name: 实验技能
+    summary: 分子克隆、聚合酶链式反应、蛋白免疫印迹、植物组织培养
+  - id: skill-data
+    name: 数据处理
+    summary: 使用 R 与 Python 完成统计分析、绘图与可重复的脚本化流程
+  - id: skill-course
+    name: 课程开发
+    summary: 独立完成校本课程的选题、框架设计、教案编写与教学实施
+
+languages:
+  - id: lang-zh
+    language: 汉语
+    fluency: 母语
+  - id: lang-en
+    language: 英语
+    fluency: 六级 580 分，可阅读专业文献
+
+evidence:
+  certificates[0].credentialId:
+    file: evidence/teacher-certificate.pdf
+    note: 与证书原件逐字核对
+    checkedAt: "2026-11-20"

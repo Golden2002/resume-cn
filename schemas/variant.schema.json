@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/resume-cn/resume-cn/schemas/variant.schema.json",
+  "title": "resume-cn：岗位变体",
+  "description": "声明同一份事实数据要按什么口径组织成一份简历。内容选用在这一层，不写进数据、也不写进模板。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["template", "content"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "template": { "type": "string" },
+    "label": { "type": "string", "description": "覆盖数据里的求职意向" },
+    "pageBudget": { "type": "integer", "minimum": 1, "maximum": 4, "default": 2 },
+    "photo": { "type": "boolean", "default": true },
+    "locale": { "type": "string", "enum": ["zh-CN"], "default": "zh-CN" },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": { "type": "string" },
+        "org": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
+    "content": {
+      "type": "array",
+      "description": "按顺序声明分区。每项用 ids 或 tags 选取数据条目；两者都省则取该分区全部条目。",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["section"],
+        "properties": {
+          "section": {
+            "type": "string",
+            "enum": ["education", "work", "projects", "awards", "certificates", "publications", "skills", "languages"]
+          },
+          "title": { "type": "string", "description": "分区标题，缺省用模板内置标题" },
+          "ids": { "type": "array", "items": { "type": "string" } },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "maxItems": { "type": "integer", "minimum": 1 },
+          "bullets": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "每条目最多取几条 highlights，缺省全取"
+          },
+          "inline": {
+            "type": "boolean",
+            "description": "true 时把条目压成单行罗列（用于荣誉资质这类短条目）"
+          }
+        }
+      }
+    },
+    "statement": {
+      "type": "object",
+      "description": "个人陈述。默认不启用。仅在招聘公告明确要求时启用，且本工具只允许放在末尾。",
+      "additionalProperties": false,
+      "required": ["text"],
+      "properties": {
+        "title": { "type": "string", "default": "补充说明" },
+        "text": { "type": "string" },
+        "maxChars": { "type": "integer", "minimum": 50, "maximum": 400, "default": 300 }
+      }
+    },
+    "forbidEntities": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "本变体中不得出现的机构名。用于防止把 A 校的定制句投给 B 校。"
+    }
+  }
+}

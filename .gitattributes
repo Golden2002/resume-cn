@@ -1,0 +1,10 @@
+# 统一换行符，避免 Windows 与 Linux 协作时整文件重新格式化
+* text=auto eol=lf
+
+# 二进制
+*.otf binary
+*.ttf binary
+*.pdf binary
+*.docx binary
+*.png binary
+*.jpg binary

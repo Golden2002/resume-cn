@@ -1,0 +1,95 @@
+# 复旦红模板：模板清单
+# 渲染器只读这个文件，不读代码里的常量。换模板即换此文件加对应的布局实现。
+id: fudan-red
+name: 复旦红
+version: 1.0.0
+description: A4 两页体例，红色标题条，右上证件照，页脚页码。中文简历常用版式。
+
+font:
+  # 字体名写入 DOCX；PDF 转换时由系统字体目录解析，产物门禁会校验是否全部嵌入。
+  family: "Source Han Sans SC"
+  eastAsia: "Source Han Sans SC"
+  fallback:
+    - "Noto Sans CJK SC"
+    - "微软雅黑"
+  # 备选度量参考：微软雅黑与思源黑体字面宽度接近，切换不破坏版式。
+
+colors:
+  primary: "9D2235"
+  ink: "1A1A1A"
+  muted: "5A5A5A"
+  rule: "D9C3C7"
+
+page:
+  size: A4
+  margins:
+    topPt: 32
+    bottomPt: 32
+    leftPt: 54
+    rightPt: 54
+
+geometry:
+  contentWidthTwip: 9746
+  tabStopTwip: 9746
+  photo:
+    widthPt: 72
+    heightPt: 96
+    cellWidthTwip: 1500
+
+dateSeparator: " – "
+
+typography:
+  # 单位为 pt，渲染时换算为 DOCX 的半磅值
+  name: 19
+  label: 10.5
+  body: 9.5
+  small: 9
+  sectionTitle: 10.5
+  footer: 8
+
+spacing:
+  section:
+    before: 128
+    after: 54
+    line: 244
+  entry:
+    before: 74
+    after: 20
+    line: 246
+  bullet:
+    before: 10
+    after: 10
+    line: 240
+
+footer:
+  leftTemplate: "{name}"
+  rightTemplate: "应聘：{label}　｜　第 {page} 页 / 共 {pages} 页"
+
+# 单行罗列型分区的标签词
+inlineLabels:
+  awards: 荣誉
+  certificates: 证书
+  publications: 作品
+  skills: ""
+  languages: ""
+
+sectionTitles:
+  education: 教育背景
+  work: 教学与实践经历
+  projects: 项目与实践经历
+  awards: 荣誉与资质
+  certificates: 证书与资质
+  publications: 论文与作品
+  skills: 语言与技能
+  languages: 语言能力
+
+# 页数预算默认值。variant 可覆盖。
+pageBudget: 2
+
+# 声明启用后必须由产物门禁校验的项
+gates:
+  requireFontsEmbedded: true
+  requireDeclaredFont: true
+  requireAtsRoundTrip: true
+  forbidFullIdNumber: true
+  requireStatementLast: true

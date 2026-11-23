@@ -1,0 +1,230 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/resume-cn/resume-cn/schemas/resume.schema.json",
+  "title": "resume-cn：个人事实数据",
+  "description": "字段命名以 JSON Resume 为基线，cn 命名空间下为中文场景扩展。本 schema 不接收身份证号；如需证明身份，请在 evidence 中指向扫描件。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["basics"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "basics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "description": "求职意向。写入页首，由 variant 覆盖" },
+        "image": { "type": "string", "description": "证件照路径，相对数据目录" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "url": { "type": "string" },
+        "summary": { "type": "string", "description": "仅供 statement 分区引用，不自动进入正文" },
+        "location": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "city": { "type": "string" },
+            "region": { "type": "string" },
+            "address": { "type": "string" }
+          }
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["network", "username"],
+            "properties": {
+              "network": { "type": "string" },
+              "username": { "type": "string" },
+              "url": { "type": "string" }
+            }
+          }
+        },
+        "cn": {
+          "type": "object",
+          "description": "中文场景扩展",
+          "additionalProperties": false,
+          "properties": {
+            "gender": { "type": "string" },
+            "ethnicity": { "type": "string" },
+            "birthDate": { "type": "string", "description": "格式 YYYY-MM 或 YYYY-MM-DD" },
+            "politicalStatus": { "type": "string" },
+            "nativePlace": { "type": "string" },
+            "hukou": { "type": "string" },
+            "studentId": { "type": "string" },
+            "maritalStatus": { "type": "string" }
+          }
+        }
+      }
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["institution"],
+        "properties": {
+          "id": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "institution": { "type": "string" },
+          "url": { "type": "string" },
+          "area": { "type": "string", "description": "专业或院系" },
+          "studyType": { "type": "string", "description": "学位或学历，如 硕士、学士" },
+          "startDate": { "type": "string" },
+          "endDate": { "type": "string" },
+          "score": { "type": "string" },
+          "summary": { "type": "string" },
+          "highlights": { "type": "array", "items": { "type": "string" } },
+          "cn": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "level": { "type": "string", "description": "学历层次，如 高中、本科、硕士" },
+              "note": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "work": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "position"],
+        "properties": {
+          "id": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "name": { "type": "string", "description": "单位或项目名" },
+          "position": { "type": "string" },
+          "url": { "type": "string" },
+          "startDate": { "type": "string" },
+          "endDate": { "type": "string" },
+          "summary": { "type": "string" },
+          "highlights": { "type": "array", "items": { "type": "string" } },
+          "keywords": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "id": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "startDate": { "type": "string" },
+          "endDate": { "type": "string" },
+          "highlights": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "awards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title"],
+        "properties": {
+          "id": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "title": { "type": "string" },
+          "date": { "type": "string" },
+          "awarder": { "type": "string" },
+          "summary": { "type": "string" }
+        }
+      }
+    },
+    "certificates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "id": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "name": { "type": "string" },
+          "date": { "type": "string" },
+          "issuer": { "type": "string" },
+          "credentialId": { "type": "string" },
+          "summary": { "type": "string" },
+          "cn": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "subject": { "type": "string", "description": "任教学科" },
+              "level": { "type": "string", "description": "等级，如 一级乙等" },
+              "score": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "publications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "id": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "name": { "type": "string" },
+          "publisher": { "type": "string" },
+          "releaseDate": { "type": "string" },
+          "url": { "type": "string" },
+          "summary": { "type": "string" }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "id": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "name": { "type": "string" },
+          "level": { "type": "string" },
+          "summary": { "type": "string" },
+          "keywords": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["language"],
+        "properties": {
+          "id": { "type": "string" },
+          "language": { "type": "string" },
+          "fluency": { "type": "string" }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "description": "字段溯源：键为字段路径，值为证据文件与核对时间。用于人工回看，不写入简历正文。",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "file": { "type": "string" },
+          "note": { "type": "string" },
+          "checkedAt": { "type": "string" }
+        }
+      }
+    }
+  }
+}
