@@ -87,14 +87,11 @@ spacing:
   section:
     before: 220
     after: 96
-    # 条用段落实现，不用单元格。单元格两侧要垫空段落，空段落各占一整行，
-    # 条上下的留白会翻倍。条高用固定行高写死；白字前垫一个空格当左内边距。
-    heightPt: 20.4
-    textInset: " "
-    # 白字上抬 3 个半磅（1.5 pt）。段落底色只能把字压在条的下方，抬这一点视觉上才居中。
-    titleLiftHalfPt: 3
-    indentLeft: 0
-    indentRight: 0
+    # 这三个值与定稿脚本逐字一致：line 260 走 auto，左右缩进各 40。
+    # 不要改成固定行高或 0 缩进：LibreOffice 会照做，条高与条宽随之改变。
+    line: 260
+    indentLeft: 40
+    indentRight: 40
   entry:
     before: 130
     after: 40

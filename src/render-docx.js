@@ -76,25 +76,24 @@ function makeRuns(template) {
   const sectionBar = (title) => {
     const cfg = SP.section || {};
     records.push(String(title));
-    const barHeight = cfg.heightPt || 20.4;
-    const lift = cfg.titleLiftHalfPt === undefined ? 4 : cfg.titleLiftHalfPt;
-
-    // 段落实现，条高固定。段落底色做不到垂直居中：行距全落在字上方，白字偏低。
-    // 用 w:position 把白字上抬若干半磅来补正，实测抬 2 pt 后上下留白相等。
-    // 不用表格：LibreOffice 会在表格周围加间距，条上下的留白会翻倍。
+    // 属性与定稿脚本逐字一致：shading + before/after/line(auto) + 左右缩进，
+    // 子元素只有一个白字 run。不加 keepNext、不加前置空格、不加 position，
+    // 这三样都会写进 DOCX，LibreOffice 照做，结果就与原流程不同。
     return [
       new Paragraph({
-        keepNext: true,
         shading: { type: ShadingType.CLEAR, fill: C.primary },
-        indent: { left: cfg.indentLeft || 0, right: cfg.indentRight || 0 },
-        spacing: Object.assign(
-          { before: cfg.before === undefined ? 220 : cfg.before, after: cfg.after === undefined ? 96 : cfg.after },
-          { line: Math.round(barHeight * 20), lineRule: LineRuleType.EXACT }
+        spacing: makeSpacing(
+          template,
+          cfg.before === undefined ? 220 : cfg.before,
+          cfg.after === undefined ? 96 : cfg.after,
+          cfg.line === undefined ? 260 : cfg.line,
+          LH.section || 20
         ),
-        children: [
-          ...(cfg.textInset ? [new TextRun({ text: cfg.textInset, font: FONT, size: halfPt(T.sectionTitle), color: 'FFFFFF' })] : []),
-          new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF', position: lift }),
-        ],
+        indent: {
+          left: cfg.indentLeft === undefined ? 40 : cfg.indentLeft,
+          right: cfg.indentRight === undefined ? 40 : cfg.indentRight,
+        },
+        children: [new TextRun({ text: title, font: FONT, size: halfPt(T.sectionTitle), bold: true, color: 'FFFFFF' })],
       }),
     ];
   };
